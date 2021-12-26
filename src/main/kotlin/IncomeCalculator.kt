@@ -1,3 +1,4 @@
+import api.nbp.ExchangeRateLoader
 import java.io.File
 import java.math.BigDecimal
 import java.util.*
@@ -12,7 +13,9 @@ class IncomeCalculator {
     ) {
         val dateRange = startingDate.rangeTo(endingDate)
         val parser = Parser()
+        val exchangeRateLoader = ExchangeRateLoader()
         val allTransactions = parser.parse(File(filename).readText())
+//            .map { it.copy(exchangeRateLoader.load()) }
 
         val dividendTax = DividendCalculator().calculateDividendTax(allTransactions,
             dividendTaxRatePercentAlreadyPaidInUsa,
