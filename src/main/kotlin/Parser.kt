@@ -1,4 +1,5 @@
 import java.math.BigDecimal
+import java.util.*
 
 class Parser {
     fun parse(input: String): List<Transaction> {
@@ -6,7 +7,11 @@ class Parser {
             .drop(1)
             .map {
                 val split = it.split(",")
-                val date = split[0]
+//                02/12/2019 17:35:00
+                val date = GregorianCalendar(split[0].substring(6, 10).toInt(),
+                    split[0].substring(3, 5).toInt() - 1,
+                    split[0].substring(0, 2).toInt()
+                )
                 val ticker = split[1].let { it.ifEmpty { null } }
                 val type = TransactionType.values().find { it.mappedName == split[2] }!!
                 val quantity = split[3].let { if (it.isEmpty()) null else BigDecimal(it) }

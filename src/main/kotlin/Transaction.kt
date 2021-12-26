@@ -1,7 +1,8 @@
 import java.math.BigDecimal
+import java.util.*
 
 data class Transaction(
-    val date: String,
+    val date: GregorianCalendar,
     val ticker: String?,
     val type: TransactionType,
     val quantity: BigDecimal?,

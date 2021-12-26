@@ -1,6 +1,7 @@
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.util.*
 
 internal class ParserTest {
 
@@ -13,7 +14,7 @@ internal class ParserTest {
 
         Assertions.assertThat(actual)
             .isEqualTo(listOf(Transaction(
-                "02/12/2019 17:35:00",
+                GregorianCalendar(2019, 11, 2),
                 null,
                 TransactionType.CASH_TOP_UP,
                 null,
