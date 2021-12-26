@@ -16,6 +16,6 @@ internal class DividendCalculatorTest {
             GregorianCalendar(2020, 0, 1).rangeTo(GregorianCalendar(2020, 11, 31))
         )
 
-        Assertions.assertThat(actual).isEqualTo(BigDecimal("16.24"))
+        Assertions.assertThat(actual).isEqualTo(BigDecimal("4.1713"))
     }
 }
