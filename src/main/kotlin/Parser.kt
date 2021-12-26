@@ -5,6 +5,7 @@ class Parser {
     fun parse(input: String): List<Transaction> {
         return input.lines()
             .drop(1)
+            .filter { it.isNotBlank() }
             .map {
                 val split = it.split(",")
 //                02/12/2019 17:35:00
