@@ -1,3 +1,4 @@
+import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
 import java.util.*
 
@@ -9,7 +10,7 @@ class Parser {
             .map {
                 val split = it.split(",")
 //                02/12/2019 17:35:00
-                val date = GregorianCalendar(split[0].substring(6, 10).toInt(),
+                val date = LocalDate(split[0].substring(6, 10).toInt(),
                     split[0].substring(3, 5).toInt() - 1,
                     split[0].substring(0, 2).toInt()
                 )

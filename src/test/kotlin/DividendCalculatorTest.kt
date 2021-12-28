@@ -1,3 +1,4 @@
+import kotlinx.datetime.LocalDate
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -13,7 +14,7 @@ internal class DividendCalculatorTest {
             transactions,
             BigDecimal("0.15"),
             BigDecimal("0.19"),
-            GregorianCalendar(2020, 0, 1).rangeTo(GregorianCalendar(2020, 11, 31))
+            LocalDate(2020, 0, 1).rangeTo(LocalDate(2020, 11, 31))
         )
 
         Assertions.assertThat(actual).isEqualTo(BigDecimal("4.1713"))

@@ -1,8 +1,8 @@
+import kotlinx.datetime.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.math.BigDecimal
-import java.util.*
 
 internal class ParserTest {
 
@@ -15,7 +15,7 @@ internal class ParserTest {
 
         assertThat(actual)
             .isEqualTo(listOf(Transaction(
-                GregorianCalendar(2019, 11, 2),
+                LocalDate(2019, 11, 2),
                 null,
                 TransactionType.CASH_TOP_UP,
                 null,

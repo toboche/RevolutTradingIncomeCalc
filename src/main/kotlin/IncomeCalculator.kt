@@ -1,15 +1,15 @@
 import api.nbp.ExchangeRateLoader
+import kotlinx.datetime.LocalDate
 import java.io.File
 import java.math.BigDecimal
-import java.util.*
 
 class IncomeCalculator {
     fun calculateIncome(
         filename: String,
         dividendTaxRatePercentAlreadyPaidInUsa: BigDecimal = BigDecimal("0.15"),
         totalDividendTaxRatePercent: BigDecimal = BigDecimal("0.19"),
-        startingDate: GregorianCalendar,
-        endingDate: GregorianCalendar,
+        startingDate: LocalDate,
+        endingDate: LocalDate,
     ) {
         val dateRange = startingDate.rangeTo(endingDate)
         val parser = Parser()

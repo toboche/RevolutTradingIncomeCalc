@@ -1,3 +1,4 @@
+import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
 import java.util.*
 
@@ -6,7 +7,7 @@ class DividendCalculator {
         allTransactions: List<Transaction>,
         dividendTaxRatePercentAlreadyPaidInUsa: BigDecimal,
         totalDividendTaxRatePercent: BigDecimal,
-        dateRange: ClosedRange<GregorianCalendar>,
+        dateRange: ClosedRange<LocalDate>,
     ) = allTransactions.filter { it.type == TransactionType.DIVIDEND }
         .filter { dateRange.contains(it.date) }
         .sumOf {

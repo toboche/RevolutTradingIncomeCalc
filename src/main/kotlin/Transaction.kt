@@ -1,8 +1,8 @@
+import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
-import java.util.*
 
 data class Transaction(
-    val date: GregorianCalendar,
+    val date: LocalDate,
     val ticker: String?,
     val type: TransactionType,
     val quantity: BigDecimal?,
