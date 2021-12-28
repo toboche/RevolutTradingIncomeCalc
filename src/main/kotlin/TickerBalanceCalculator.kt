@@ -37,25 +37,8 @@ class TickerTaxCalculator {
             }
             state + (transaction.ticker to newTickerState)
         }
+        .mapValues { it.value.filter { dateRange.contains(it.date) } }
         .map { it.value.sumOf { it.income ?: ZERO } }
         .sumOf { it } * taxRatePercent
-
-    sealed class TransientTransaction
-    data class Buy(
-        val value: BigDecimal,
-        val amount: BigDecimal,
-    ) : TransientTransaction()
-//        .groupBy { it.ticker!! }
-
-
-    //        .filter { dateRange.contains(it.date) }
-//        .sumOf {
-//            //                12.55*1/(1-0.15)
-//            val taxToPay =
-//                it.totalAmount * taxRatePercent
-//            val alreadyPaidTaxInUsa = grossDividend - it.totalAmount
-//            val totalDividendTax = grossDividend * totalDividendTaxRatePercent
-//            (totalDividendTax - alreadyPaidTaxInUsa)
-//        }
 
 }

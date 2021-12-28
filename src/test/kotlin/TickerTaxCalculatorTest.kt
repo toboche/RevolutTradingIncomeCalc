@@ -1,9 +1,14 @@
 import kotlinx.datetime.LocalDate
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import java.io.File
 import java.math.BigDecimal
 
 internal class TickerTaxCalculatorTest {
+    private val startDate = LocalDate(2020, 1, 1)
+
+    private val endDate = LocalDate(2020, 12, 31)
+
     @Test
     internal fun `calculate zero tax for one buy`() {
         val transactions = listOf(
@@ -17,7 +22,7 @@ internal class TickerTaxCalculatorTest {
         val actual = TickerTaxCalculator().calculateTickerTax(
             transactions,
             BigDecimal("0.19"),
-            LocalDate(2020, 1, 1).rangeTo(LocalDate(2020, 12, 31)),
+            startDate.rangeTo(endDate),
         )
 
         Assertions.assertThat(actual).isZero
@@ -41,7 +46,7 @@ internal class TickerTaxCalculatorTest {
         val actual = TickerTaxCalculator().calculateTickerTax(
             transactions,
             BigDecimal("0.19"),
-            LocalDate(2020, 1, 1).rangeTo(LocalDate(2020, 12, 31)),
+            startDate.rangeTo(endDate),
         )
 
         Assertions.assertThat(actual).isEqualTo(BigDecimal("0.19"))
@@ -65,10 +70,23 @@ internal class TickerTaxCalculatorTest {
         val actual = TickerTaxCalculator().calculateTickerTax(
             transactions,
             BigDecimal("0.19"),
-            LocalDate(2020, 1, 1).rangeTo(LocalDate(2020, 12, 31)),
+            startDate.rangeTo(endDate),
         )
 
         Assertions.assertThat(actual).isEqualTo(BigDecimal("0.095"))
+    }
+
+    @Test
+    internal fun `calculate sample for 2019`() {
+        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+
+        val actual = TickerTaxCalculator().calculateTickerTax(
+            transactions,
+            BigDecimal("0.19"),
+            LocalDate(2019, 1, 1).rangeTo(LocalDate(2019, 12, 31)),
+        )
+
+        Assertions.assertThat(actual).isZero
     }
 
     private fun transaction(
@@ -77,7 +95,7 @@ internal class TickerTaxCalculatorTest {
         totalAmount: BigDecimal,
         ticker: String = "TCK",
     ) =
-        Transaction(LocalDate(1, 1, 1),
+        Transaction(startDate,
             ticker,
             transactionType,
             quantity,
