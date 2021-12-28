@@ -15,7 +15,7 @@ internal class ParserTest {
 
         assertThat(actual)
             .isEqualTo(listOf(Transaction(
-                LocalDate(2019, 11, 2),
+                LocalDate(2019, 12, 2),
                 null,
                 TransactionType.CASH_TOP_UP,
                 null,
