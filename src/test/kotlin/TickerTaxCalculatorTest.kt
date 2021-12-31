@@ -116,6 +116,19 @@ internal class TickerTaxCalculatorTest {
         Assertions.assertThat(actual).isCloseTo(BigDecimal("-163.25"), Offset.offset(BigDecimal("0.01")))
     }
 
+    @Test
+    internal fun `calculate sample 2 (after optimisations) for 2021`() {
+        val transactions = Parser().parse(File("src/test/resources/sample2.csv").readText())
+
+        val actual = TickerTaxCalculator().calculateTickerTax(
+            transactions,
+            BigDecimal("0.19"),
+            LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 12, 31)),
+        )
+
+        Assertions.assertThat(actual).isCloseTo(BigDecimal("21.75"), Offset.offset(BigDecimal("0.01")))
+    }
+
     private fun transaction(
         transactionType: TransactionType,
         quantity: BigDecimal,
