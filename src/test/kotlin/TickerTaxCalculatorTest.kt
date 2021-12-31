@@ -1,5 +1,6 @@
 import kotlinx.datetime.LocalDate
 import org.assertj.core.api.Assertions
+import org.assertj.core.data.Offset
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.math.BigDecimal
@@ -87,6 +88,32 @@ internal class TickerTaxCalculatorTest {
         )
 
         Assertions.assertThat(actual).isZero
+    }
+
+    @Test
+    internal fun `calculate sample for 2020`() {
+        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+
+        val actual = TickerTaxCalculator().calculateTickerTax(
+            transactions,
+            BigDecimal("0.19"),
+            LocalDate(2020, 1, 1).rangeTo(LocalDate(2020, 12, 31)),
+        )
+
+        Assertions.assertThat(actual).isCloseTo(BigDecimal("798.31"), Offset.offset(BigDecimal("0.01")))
+    }
+
+    @Test
+    internal fun `calculate sample for 2021`() {
+        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+
+        val actual = TickerTaxCalculator().calculateTickerTax(
+            transactions,
+            BigDecimal("0.19"),
+            LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 12, 31)),
+        )
+
+        Assertions.assertThat(actual).isCloseTo(BigDecimal("-163.25"), Offset.offset(BigDecimal("0.01")))
     }
 
     private fun transaction(
