@@ -2,10 +2,12 @@ import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
 import java.math.BigDecimal.ZERO
 
-class TickerTaxCalculator {
+class TickerBalanceCalculator(
+    private val taxRatePercent: BigDecimal = BigDecimal("0.19"),
+) {
+
     fun calculateTickerTax(
         allTransactions: List<Transaction>,
-        taxRatePercent: BigDecimal,
         dateRange: ClosedRange<LocalDate>,
     ) = allTransactions.filter {
         it.type == TransactionType.BUY
@@ -39,6 +41,31 @@ class TickerTaxCalculator {
         }
         .mapValues { it.value.filter { dateRange.contains(it.date) } }
         .map { it.value.sumOf { it.income ?: ZERO } }
-        .sumOf { it } * taxRatePercent
+        .sumOf { it }
 
+    fun calculateResult(
+        allTransactions: List<Transaction>,
+        dateRange: ClosedRange<LocalDate>,
+    ) =
+        calculateTickerTax(
+            allTransactions,
+            dateRange
+        )
+            .let {
+                if (it < ZERO) {
+                    Loss(it)
+                } else {
+                    GainTax(taxRatePercent * it)
+                }
+            }
+
+
+    sealed class Result
+    data class GainTax(
+        val tax: BigDecimal,
+    ) : Result()
+
+    data class Loss(
+        val loss: BigDecimal,
+    ) : Result()
 }

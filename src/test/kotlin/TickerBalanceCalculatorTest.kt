@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import java.math.BigDecimal
 
-internal class TickerTaxCalculatorTest {
+internal class TickerBalanceCalculatorTest {
     private val startDate = LocalDate(2020, 1, 1)
 
     private val endDate = LocalDate(2020, 12, 31)
@@ -20,13 +20,12 @@ internal class TickerTaxCalculatorTest {
             ),
         )
 
-        val actual = TickerTaxCalculator().calculateTickerTax(
+        val actual = TickerBalanceCalculator().calculateResult(
             transactions,
-            BigDecimal("0.19"),
             startDate.rangeTo(endDate),
-        )
+        ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual).isZero
+        Assertions.assertThat(actual.tax).isZero
     }
 
     @Test
@@ -44,13 +43,12 @@ internal class TickerTaxCalculatorTest {
             )
         )
 
-        val actual = TickerTaxCalculator().calculateTickerTax(
+        val actual = TickerBalanceCalculator().calculateResult(
             transactions,
-            BigDecimal("0.19"),
             startDate.rangeTo(endDate),
-        )
+        ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual).isEqualTo(BigDecimal("0.19"))
+        Assertions.assertThat(actual.tax).isEqualTo(BigDecimal("0.19"))
     }
 
     @Test
@@ -68,65 +66,60 @@ internal class TickerTaxCalculatorTest {
             )
         )
 
-        val actual = TickerTaxCalculator().calculateTickerTax(
+        val actual = TickerBalanceCalculator().calculateResult(
             transactions,
-            BigDecimal("0.19"),
             startDate.rangeTo(endDate),
-        )
+        ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual).isEqualTo(BigDecimal("0.095"))
+        Assertions.assertThat(actual.tax).isEqualTo(BigDecimal("0.095"))
     }
 
     @Test
     internal fun `calculate sample for 2019`() {
         val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
 
-        val actual = TickerTaxCalculator().calculateTickerTax(
+        val actual = TickerBalanceCalculator().calculateResult(
             transactions,
-            BigDecimal("0.19"),
             LocalDate(2019, 1, 1).rangeTo(LocalDate(2019, 12, 31)),
-        )
+        ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual).isZero
+        Assertions.assertThat(actual.tax).isZero
     }
 
     @Test
     internal fun `calculate sample for 2020`() {
         val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
 
-        val actual = TickerTaxCalculator().calculateTickerTax(
+        val actual = TickerBalanceCalculator().calculateResult(
             transactions,
-            BigDecimal("0.19"),
             LocalDate(2020, 1, 1).rangeTo(LocalDate(2020, 12, 31)),
-        )
+        ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual).isCloseTo(BigDecimal("798.31"), Offset.offset(BigDecimal("0.01")))
+        Assertions.assertThat(actual.tax).isCloseTo(BigDecimal("798.31"), Offset.offset(BigDecimal("0.01")))
     }
 
     @Test
     internal fun `calculate sample for 2021`() {
         val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
 
-        val actual = TickerTaxCalculator().calculateTickerTax(
+        val actual = TickerBalanceCalculator().calculateResult(
             transactions,
-            BigDecimal("0.19"),
             LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 12, 31)),
-        )
+        ) as TickerBalanceCalculator.Loss
 
-        Assertions.assertThat(actual).isCloseTo(BigDecimal("-163.25"), Offset.offset(BigDecimal("0.01")))
+        Assertions.assertThat(actual.loss).isCloseTo(BigDecimal("-859.21"), Offset.offset(BigDecimal("0.01")))
     }
 
     @Test
     internal fun `calculate sample 2 (after optimisations) for 2021`() {
         val transactions = Parser().parse(File("src/test/resources/sample2.csv").readText())
 
-        val actual = TickerTaxCalculator().calculateTickerTax(
+        val actual = TickerBalanceCalculator().calculateResult(
             transactions,
-            BigDecimal("0.19"),
             LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 12, 31)),
-        )
+        ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual).isCloseTo(BigDecimal("21.75"), Offset.offset(BigDecimal("0.01")))
+        Assertions.assertThat(actual.tax).isCloseTo(BigDecimal("21.75"), Offset.offset(BigDecimal("0.01")))
     }
 
     private fun transaction(
@@ -139,7 +132,6 @@ internal class TickerTaxCalculatorTest {
             ticker,
             transactionType,
             quantity,
-            BigDecimal("1"),
             totalAmount,
             "PLN",
             BigDecimal("1")

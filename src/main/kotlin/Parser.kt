@@ -1,6 +1,5 @@
 import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
-import java.util.*
 
 class Parser {
     fun parse(input: String): List<Transaction> {
@@ -26,7 +25,6 @@ class Parser {
                     ticker,
                     type,
                     quantity,
-                    pricePerShare,
                     totalAmount,
                     currency,
                     fxRate

@@ -6,7 +6,6 @@ data class Transaction(
     val ticker: String?,
     val type: TransactionType,
     val quantity: BigDecimal?,
-    val pricePerShare: BigDecimal?,
     val totalAmount: BigDecimal,
     val currency: String,
     val fxRate: BigDecimal,

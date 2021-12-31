@@ -19,7 +19,6 @@ internal class ParserTest {
                 null,
                 TransactionType.CASH_TOP_UP,
                 null,
-                null,
                 BigDecimal("800.00"),
                 "USD",
                 BigDecimal("0.258499522")
