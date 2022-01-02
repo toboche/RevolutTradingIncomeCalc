@@ -60,14 +60,12 @@ class TickerBalanceCalculator(
             state + (transaction.ticker to newTickerState)
         }
         .mapValues { it.value.filter { dateRange.contains(it.date) } }
-        .map {
-            it.value.sumOf {
+        .map { entry ->
+            entry.value.sumOf {
                 it.gain?.setScale(2, RoundingMode.HALF_UP) ?: ZERO
             }
         }
-        .sumOf {
-            it
-        }
+        .sumOf { it }
 
     private fun historicalTickerQuantityIncludingPossibleSplits(
         historicalTicker: Transaction,
