@@ -1,61 +1,112 @@
 import kotlinx.datetime.LocalDate
+import org.jetbrains.annotations.TestOnly
 import java.math.BigDecimal
 import java.math.BigDecimal.ZERO
+import java.math.RoundingMode
 
 class TickerBalanceCalculator(
     private val taxRatePercent: BigDecimal = BigDecimal("0.19"),
 ) {
 
+    @TestOnly
     fun calculateSumOfTickerTaxes(
         allTransactions: List<Transaction>,
         dateRange: ClosedRange<LocalDate>,
+        splits: List<SplitParser.Split>,
     ) = allTransactions.filter {
         it.type == TransactionType.BUY
                 || it.type == TransactionType.SELL
     }
         .fold(mapOf<String, List<Transaction>>()) { state, transaction ->
             val tickerState = state.getOrDefault(transaction.ticker!!, emptyList())
-            val newTickerState = tickerState + if (transaction.type == TransactionType.BUY) {
-                tickerState + transaction
+            val newTickerState = if (transaction.type == TransactionType.BUY) {
+                listOf(transaction)
             } else {
-                var quantityLeft = transaction.quantity!!
+                var quantityLeftToBuy = transaction.quantity!!
                 var totalAmountPaidForSoldTicker = ZERO
                 tickerState.map { historicalTicker ->
-                    if (quantityLeft == ZERO) {
+                    if (quantityLeftToBuy == ZERO || historicalTicker.type != TransactionType.BUY) {
                         historicalTicker
-                    } else if (quantityLeft >= historicalTicker.quantity) {
-                        quantityLeft -= historicalTicker.quantity!!
-                        totalAmountPaidForSoldTicker += historicalTicker.totalAmount
+                    } else if (quantityLeftToBuy >= historicalTickerQuantityIncludingPossibleSplits(historicalTicker,
+                            splits,
+                            transaction)
+                    ) {
+                        quantityLeftToBuy -= historicalTickerQuantityIncludingPossibleSplits(historicalTicker,
+                            splits,
+                            transaction)
+                        val splitsRatio = splitsRatio(
+                            splits,
+                            historicalTicker,
+                            transaction)
+                        val pricePerUnit = historicalTicker.pricePerShare!!.setScale(4) / splitsRatio
+                        totalAmountPaidForSoldTicker += historicalTicker.quantity!! * historicalTicker.pricePerShare!!
                         historicalTicker.copy(quantity = ZERO)
-                    } else { //quantityLeft<historicalTicker.quantity
+                    } else { //quantityLeftToBuy<historicalTicker.quantity
+                        val splitsRatio = splitsRatio(
+                            splits,
+                            historicalTicker,
+                            transaction)
+                        val pricePerUnit = historicalTicker.pricePerShare!!.setScale(4) / splitsRatio
+                        val newQuantity = historicalTicker.quantity!! * splitsRatio
                         val amountPaidForSoldTicker =
-                            (quantityLeft / historicalTicker.quantity!!) * historicalTicker.totalAmount
+                            pricePerUnit * quantityLeftToBuy
                         totalAmountPaidForSoldTicker += amountPaidForSoldTicker
-                        quantityLeft = ZERO
-                        historicalTicker.copy(quantity = historicalTicker.quantity - quantityLeft,
-                            totalAmount = historicalTicker.totalAmount - amountPaidForSoldTicker)
+                        val justBoughtQuantity = quantityLeftToBuy
+                        quantityLeftToBuy = ZERO
+                        historicalTicker.copy(quantity = historicalTicker.quantity!! - justBoughtQuantity.setScale(4) / splitsRatio)
                     }
-                } + transaction.copy(income = transaction.totalAmount - totalAmountPaidForSoldTicker)
+                } + transaction.copy(gain = transaction.totalAmount - totalAmountPaidForSoldTicker)
             }
             state + (transaction.ticker to newTickerState)
         }
         .mapValues { it.value.filter { dateRange.contains(it.date) } }
-        .map { it.value.sumOf { it.income ?: ZERO } }
-        .sumOf { it }
+        .map {
+            it.value.sumOf {
+                it.gain?.setScale(2, RoundingMode.HALF_UP) ?: ZERO
+            }
+        }
+        .sumOf {
+            it
+        }
+
+    private fun historicalTickerQuantityIncludingPossibleSplits(
+        historicalTicker: Transaction,
+        splits: List<SplitParser.Split>,
+        currentSellTransaction: Transaction,
+    ) =
+        splitsRatio(splits, historicalTicker, currentSellTransaction) * historicalTicker.quantity!!
+
+    private fun splitsRatio(
+        splits: List<SplitParser.Split>,
+        historicalTicker: Transaction,
+        currentSellTransaction: Transaction,
+    ) = if (splits.any { it.ticker == historicalTicker.ticker }) {
+        splits.filter {
+            it.ticker == currentSellTransaction.ticker && historicalTicker.date.rangeTo(currentSellTransaction.date)
+                .contains(it.date)
+        }
+            .fold(BigDecimal.ONE) { acc, split ->
+                acc * split.ratio
+            }
+    } else {
+        BigDecimal.ONE
+    }
 
     fun calculateResult(
         allTransactions: List<Transaction>,
         dateRange: ClosedRange<LocalDate>,
+        splits: List<SplitParser.Split>,
     ) =
         calculateSumOfTickerTaxes(
             allTransactions,
-            dateRange
+            dateRange,
+            splits
         )
             .let {
                 if (it < ZERO) {
-                    Loss(it)
+                    Loss(it.setScale(2, RoundingMode.HALF_UP))
                 } else {
-                    GainTax(taxRatePercent * it)
+                    GainTax((taxRatePercent * it).setScale(2, RoundingMode.HALF_UP))
                 }
             }
 

@@ -14,6 +14,7 @@ class CapitalGainCalculator(
         input: String,
         startingDate: LocalDate,
         endingDate: LocalDate,
+        splitInput: String,
     ): GainAndExpenses {
         val dateRange = startingDate.rangeTo(endingDate)
         val reportParser = ReportParser()
@@ -23,6 +24,7 @@ class CapitalGainCalculator(
                     it.date
                 ))
             }
+        val splits = SplitParser().parse(splitInput)
 
         val dividendTax = DividendCalculator().calculateDividendTax(allTransactions,
             dividendTaxRatePercentAlreadyPaidInUsa,
@@ -38,7 +40,8 @@ class CapitalGainCalculator(
         val capitalGain = TickerBalanceCalculator()
             .calculateResult(
                 allTransactions,
-                dateRange
+                dateRange,
+                splits
             )
         val capitalGainTax = when (capitalGain) {
             is TickerBalanceCalculator.GainTax -> {

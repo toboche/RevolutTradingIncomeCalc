@@ -22,4 +22,13 @@ internal class SplitParserTest {
                 )
             )
     }
+
+    @Test
+    internal fun `parse input`() {
+        val actual = SplitParser().parse(
+            this::class.java.classLoader.getResource("stockSplits.csv")!!.readText()
+        )
+
+        Assertions.assertThat(actual).hasSize(25)
+    }
 }

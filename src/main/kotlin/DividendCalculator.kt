@@ -1,6 +1,5 @@
 import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
-import java.util.*
 
 class DividendCalculator {
     fun calculateDividendTax(

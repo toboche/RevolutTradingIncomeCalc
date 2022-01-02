@@ -19,15 +19,14 @@ class ReportParser {
                 val pricePerShare = split[4].let { if (it.isEmpty()) null else BigDecimal(it) }
                 val totalAmount = BigDecimal(split[5])
                 val currency = split[6]
-                val fxRate = BigDecimal(split[7])
                 Transaction(
                     date,
                     ticker,
                     type,
                     quantity,
+                    pricePerShare,
                     totalAmount,
-                    currency,
-                    fxRate
+                    currency
                 )
             }
     }
