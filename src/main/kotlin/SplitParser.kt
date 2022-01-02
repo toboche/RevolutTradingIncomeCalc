@@ -2,7 +2,7 @@ import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
 
 class SplitParser {
-    fun parse(input: String): Map<String, Split> =
+    fun parse(input: String): List<Split> =
         input.lines()
             .drop(1)
             .map {
@@ -16,16 +16,16 @@ class SplitParser {
                             dateString.substring(5, 7).toInt(),
                             dateString.substring(8, 10).toInt()
                         )
-                        tickerString to
-                                Split(
-                                    date,
-                                    ratio
-                                )
+                        Split(
+                            tickerString,
+                            date,
+                            ratio
+                        )
                     }
             }
-            .toMap()
 
     data class Split(
+        val ticker: String,
         val date: LocalDate,
         val ratio: BigDecimal,
     )

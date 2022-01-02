@@ -11,14 +11,14 @@ internal class SplitParserTest {
         val actual = SplitParser().parse(input)
         Assertions.assertThat(actual)
             .isEqualTo(
-                mapOf(
-                    "ANET" to
-                            SplitParser.Split(
-                                LocalDate(
-                                    2021, 11, 18
-                                ),
-                                BigDecimal("4")
-                            )
+                listOf(
+                    SplitParser.Split(
+                        "ANET",
+                        LocalDate(
+                            2021, 11, 18
+                        ),
+                        BigDecimal("4")
+                    )
                 )
             )
     }
