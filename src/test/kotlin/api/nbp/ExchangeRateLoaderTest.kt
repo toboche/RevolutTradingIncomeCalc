@@ -23,4 +23,21 @@ internal class ExchangeRateLoaderTest {
             "/api/exchangerates/rates/a/usd/2012-01-02/?format=json"
         )
     }
+
+    @Test
+    internal fun `check exchange rate for date-1 when this date doesnt have it`() {
+        server.enqueue(MockResponse().setResponseCode(404).setBody("404 NotFound - Not Found - Brak danych"))
+        server.enqueue(MockResponse().setBody("{\"table\":\"A\",\"currency\":\"funt szterling\",\"code\":\"USD\",\"rates\":[{\"no\":\"1/A/NBP/2012\",\"effectiveDate\":\"2012-01-02\",\"mid\":5.3480}]}"))
+
+        val actual = ExchangeRateLoader(server.url("/").toUrl().toString())
+            .load(LocalDate(2012, 1, 2))
+
+        Assertions.assertThat(actual).isEqualTo(BigDecimal("5.3480"))
+        Assertions.assertThat(server.takeRequest().path).isEqualTo(
+            "/api/exchangerates/rates/a/usd/2012-01-02/?format=json"
+        )
+        Assertions.assertThat(server.takeRequest().path).isEqualTo(
+            "/api/exchangerates/rates/a/usd/2012-01-01/?format=json"
+        )
+    }
 }
