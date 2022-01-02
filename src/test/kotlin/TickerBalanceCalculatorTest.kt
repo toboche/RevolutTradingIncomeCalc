@@ -1,11 +1,11 @@
 import kotlinx.datetime.LocalDate
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.math.BigDecimal
 
-internal class TickerBalanceCalculatorTest {
+class TickerBalanceCalculatorTest {
     private val startDate = LocalDate(2020, 1, 1)
 
     private val endDate = LocalDate(2020, 12, 31)
@@ -19,7 +19,7 @@ internal class TickerBalanceCalculatorTest {
             "19-11-2021 16:14,NVDA,SELL,2.75,329.85,907.0875,USD"
 
     @Test
-    internal fun `calculate zero tax for one buy`() {
+    fun `calculate zero tax for one buy`() {
         val transactions = listOf(
             transaction(
                 TransactionType.BUY,
@@ -35,11 +35,11 @@ internal class TickerBalanceCalculatorTest {
             splits,
         ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual.tax).isZero
+        assertThat(actual.tax).isZero
     }
 
     @Test
-    internal fun `calculate tax for one buy and one sell`() {
+    fun `calculate tax for one buy and one sell`() {
         val transactions = listOf(
             transaction(
                 TransactionType.BUY,
@@ -61,11 +61,11 @@ internal class TickerBalanceCalculatorTest {
             splits,
         ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual.tax).isEqualTo(BigDecimal("0.19"))
+        assertThat(actual.tax).isEqualTo(BigDecimal("0.19"))
     }
 
     @Test
-    internal fun `calculate tax for one buy and half sell`() {
+    fun `calculate tax for one buy and half sell`() {
         val transactions = listOf(
             transaction(
                 TransactionType.BUY,
@@ -87,11 +87,98 @@ internal class TickerBalanceCalculatorTest {
             splits,
         ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual.tax).isEqualTo(BigDecimal("0.10"))
+        assertThat(actual.tax).isEqualTo(BigDecimal("0.10"))
     }
 
     @Test
-    internal fun `calculate sample for 2019`() {
+    fun `calculate tax for one buy and half sell then buy and then sell`() {
+        val transactions = listOf(
+            transaction(
+                TransactionType.BUY,
+                quantity = BigDecimal("1"),
+                pricePerShare = BigDecimal("1"),
+                totalAmount = BigDecimal("1"),
+            ),
+            transaction(
+                TransactionType.SELL,
+                quantity = BigDecimal("0.5"),
+                pricePerShare = BigDecimal("2"),
+                totalAmount = BigDecimal("1"),
+            ),
+            transaction(
+                TransactionType.BUY,
+                quantity = BigDecimal("1"),
+                pricePerShare = BigDecimal("3"),
+                totalAmount = BigDecimal("3"),
+            ),
+            transaction(
+                TransactionType.SELL,
+                quantity = BigDecimal("1"),
+                pricePerShare = BigDecimal("4"),
+                totalAmount = BigDecimal("4"),
+            ),
+        )
+
+        val actual = TickerBalanceCalculator(
+            BigDecimal.ONE
+        ).calculateResult(
+            transactions,
+            startDate.rangeTo(endDate),
+            splits,
+        ) as TickerBalanceCalculator.GainTax
+
+        assertThat(actual.tax).isEqualTo(BigDecimal("2.50"))
+    }
+
+    @Test
+    fun `calculate tax for one buy and half sell then buy and then sell and then half sell`() {
+        val transactions = listOf(
+            transaction(
+                TransactionType.BUY,
+                quantity = BigDecimal("1"),
+                pricePerShare = BigDecimal("1"),
+                totalAmount = BigDecimal("1"),
+            ),
+            transaction(
+                TransactionType.SELL,
+                quantity = BigDecimal("0.5"),
+                pricePerShare = BigDecimal("2"),
+                totalAmount = BigDecimal("1"),
+            ),
+            transaction(
+                TransactionType.BUY,
+                quantity = BigDecimal("1"),
+                pricePerShare = BigDecimal("3"),
+                totalAmount = BigDecimal("3"),
+            ),
+            transaction(
+                TransactionType.SELL,
+                quantity = BigDecimal("1"),
+                pricePerShare = BigDecimal("4"),
+                totalAmount = BigDecimal("4"),
+            ),
+            transaction(
+                TransactionType.SELL,
+                quantity = BigDecimal("0.5"),
+                pricePerShare = BigDecimal("2"),
+                totalAmount = BigDecimal("2"),
+            ),
+        )
+
+        val actual = TickerBalanceCalculator(
+            BigDecimal.ONE
+        ).calculateResult(
+            transactions,
+            startDate.rangeTo(endDate),
+            splits,
+        ) as TickerBalanceCalculator.GainTax
+
+        assertThat(actual.tax).isEqualTo(BigDecimal("3.00"))
+    }
+
+
+    @Test
+    fun `calculate sample for 2019`() {
         val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = TickerBalanceCalculator().calculateResult(
@@ -100,11 +187,11 @@ internal class TickerBalanceCalculatorTest {
             splits,
         ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual.tax).isZero
+        assertThat(actual.tax).isZero
     }
 
     @Test
-    internal fun `calculate sample for 2020`() {
+    fun `calculate sample for 2020`() {
         val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = TickerBalanceCalculator().calculateResult(
@@ -113,11 +200,11 @@ internal class TickerBalanceCalculatorTest {
             splits,
         ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual.tax).isCloseTo(BigDecimal("158.51"), Offset.offset(BigDecimal("0.01")))
+        assertThat(actual.tax).isCloseTo(BigDecimal("173.29"), Offset.offset(BigDecimal("0.01")))
     }
 
     @Test
-    internal fun `calculate sample for 2021`() {
+    fun `calculate sample for 2021`() {
         val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = TickerBalanceCalculator().calculateResult(
@@ -126,11 +213,11 @@ internal class TickerBalanceCalculatorTest {
             splits,
         ) as TickerBalanceCalculator.Loss
 
-        Assertions.assertThat(actual.loss).isCloseTo(BigDecimal("-1334.88"), Offset.offset(BigDecimal("0.01")))
+        assertThat(actual.loss).isCloseTo(BigDecimal("-1105.56"), Offset.offset(BigDecimal("0.01")))
     }
 
     @Test
-    internal fun `calculate sample 2 (after optimisations) for 2021`() {
+    fun `calculate sample 2 (after optimisations) for 2021`() {
         val transactions = ReportParser().parse(File("src/test/resources/sample2.csv").readText())
 
         val actual = TickerBalanceCalculator().calculateResult(
@@ -139,11 +226,11 @@ internal class TickerBalanceCalculatorTest {
             splits,
         ) as TickerBalanceCalculator.GainTax
 
-        Assertions.assertThat(actual.tax).isCloseTo(BigDecimal("24.2706"), Offset.offset(BigDecimal("0.01")))
+        assertThat(actual.tax).isCloseTo(BigDecimal("30.93"), Offset.offset(BigDecimal("0.01")))
     }
 
     @Test
-    internal fun `calculate properly with splits`() {
+    fun `calculate properly with splits`() {
         val inputTransactions = ReportParser().parse(splitsInput)
         val splits = SplitParser().parse(
             File("src/main/resources/stockSplits.csv").readText()
@@ -155,12 +242,12 @@ internal class TickerBalanceCalculatorTest {
             splits
         )
 
-        Assertions.assertThat(actual)
+        assertThat(actual)
             .isEqualTo("70.07")
     }
 
     @Test
-    internal fun `calculate properly with splits 2`() {
+    fun `calculate properly with splits 2`() {
         val inputTransactions = ReportParser().parse(splitsInput)
         val splits = SplitParser().parse(
             File("src/main/resources/stockSplits.csv").readText()
@@ -172,12 +259,12 @@ internal class TickerBalanceCalculatorTest {
             splits
         )
 
-        Assertions.assertThat(actual)
+        assertThat(actual)
             .isEqualTo(BigDecimal("88.26"))
     }
 
     @Test
-    internal fun `calculate properly with splits 3`() {
+    fun `calculate properly with splits 3`() {
         val inputTransactions = ReportParser().parse(splitsInput)
         val splits = SplitParser().parse(
             File("src/main/resources/stockSplits.csv").readText()
@@ -189,7 +276,7 @@ internal class TickerBalanceCalculatorTest {
             splits
         )
 
-        Assertions.assertThat(actual)
+        assertThat(actual)
             .isEqualTo(BigDecimal("626.99"))
     }
 

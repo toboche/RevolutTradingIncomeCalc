@@ -20,11 +20,11 @@ class TickerBalanceCalculator(
         .fold(mapOf<String, List<Transaction>>()) { state, transaction ->
             val tickerState = state.getOrDefault(transaction.ticker!!, emptyList())
             val newTickerState = if (transaction.type == TransactionType.BUY) {
-                listOf(transaction)
+                listOf(transaction) + state.getOrDefault(transaction.ticker, emptyList())
             } else {
                 var quantityLeftToBuy = transaction.quantity!!
                 var totalAmountPaidForSoldTicker = ZERO
-                tickerState.map { historicalTicker ->
+                tickerState.reversed().map { historicalTicker ->
                     if (quantityLeftToBuy == ZERO || historicalTicker.type != TransactionType.BUY) {
                         historicalTicker
                     } else if (quantityLeftToBuy >= historicalTickerQuantityIncludingPossibleSplits(historicalTicker,
@@ -34,11 +34,6 @@ class TickerBalanceCalculator(
                         quantityLeftToBuy -= historicalTickerQuantityIncludingPossibleSplits(historicalTicker,
                             splits,
                             transaction)
-                        val splitsRatio = splitsRatio(
-                            splits,
-                            historicalTicker,
-                            transaction)
-                        val pricePerUnit = historicalTicker.pricePerShare!!.setScale(4) / splitsRatio
                         totalAmountPaidForSoldTicker += historicalTicker.quantity!! * historicalTicker.pricePerShare!!
                         historicalTicker.copy(quantity = ZERO)
                     } else { //quantityLeftToBuy<historicalTicker.quantity
@@ -47,15 +42,14 @@ class TickerBalanceCalculator(
                             historicalTicker,
                             transaction)
                         val pricePerUnit = historicalTicker.pricePerShare!!.setScale(4) / splitsRatio
-                        val newQuantity = historicalTicker.quantity!! * splitsRatio
                         val amountPaidForSoldTicker =
                             pricePerUnit * quantityLeftToBuy
                         totalAmountPaidForSoldTicker += amountPaidForSoldTicker
                         val justBoughtQuantity = quantityLeftToBuy
                         quantityLeftToBuy = ZERO
-                        historicalTicker.copy(quantity = historicalTicker.quantity!! - justBoughtQuantity.setScale(4) / splitsRatio)
+                        historicalTicker.copy(quantity = historicalTicker.quantity!! - justBoughtQuantity / splitsRatio)
                     }
-                } + transaction.copy(gain = transaction.totalAmount - totalAmountPaidForSoldTicker)
+                }.reversed() + transaction.copy(gain = transaction.totalAmount - totalAmountPaidForSoldTicker)
             }
             state + (transaction.ticker to newTickerState)
         }
