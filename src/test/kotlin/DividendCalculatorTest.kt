@@ -7,7 +7,7 @@ import java.math.BigDecimal
 internal class DividendCalculatorTest {
     @Test
     internal fun `calculate sample dividend`() {
-        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+        val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = DividendCalculator().calculateDividendTax(
             transactions,
@@ -21,7 +21,7 @@ internal class DividendCalculatorTest {
 
     @Test
     internal fun `calculate sample dividend for 2021`() {
-        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+        val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = DividendCalculator().calculateDividendTax(
             transactions,

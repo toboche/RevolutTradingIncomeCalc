@@ -7,7 +7,7 @@ import java.math.BigDecimal
 internal class CustodyFeesCalculatorTest {
     @Test
     internal fun `calculate fees`() {
-        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+        val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = CustodyFeesCalculator().calculate(
             transactions,

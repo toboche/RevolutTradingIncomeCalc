@@ -1,7 +1,7 @@
 import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
 
-class Parser {
+class ReportParser {
     fun parse(input: String): List<Transaction> {
         return input.lines()
             .drop(1)

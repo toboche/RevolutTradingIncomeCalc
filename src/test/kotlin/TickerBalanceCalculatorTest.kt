@@ -76,7 +76,7 @@ internal class TickerBalanceCalculatorTest {
 
     @Test
     internal fun `calculate sample for 2019`() {
-        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+        val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = TickerBalanceCalculator().calculateResult(
             transactions,
@@ -88,7 +88,7 @@ internal class TickerBalanceCalculatorTest {
 
     @Test
     internal fun `calculate sample for 2020`() {
-        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+        val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = TickerBalanceCalculator().calculateResult(
             transactions,
@@ -100,7 +100,7 @@ internal class TickerBalanceCalculatorTest {
 
     @Test
     internal fun `calculate sample for 2021`() {
-        val transactions = Parser().parse(File("src/test/resources/sample.csv").readText())
+        val transactions = ReportParser().parse(File("src/test/resources/sample.csv").readText())
 
         val actual = TickerBalanceCalculator().calculateResult(
             transactions,
@@ -112,7 +112,7 @@ internal class TickerBalanceCalculatorTest {
 
     @Test
     internal fun `calculate sample 2 (after optimisations) for 2021`() {
-        val transactions = Parser().parse(File("src/test/resources/sample2.csv").readText())
+        val transactions = ReportParser().parse(File("src/test/resources/sample2.csv").readText())
 
         val actual = TickerBalanceCalculator().calculateResult(
             transactions,

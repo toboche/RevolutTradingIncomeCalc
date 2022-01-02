@@ -16,8 +16,8 @@ class CapitalGainCalculator(
         endingDate: LocalDate,
     ): GainAndExpenses {
         val dateRange = startingDate.rangeTo(endingDate)
-        val parser = Parser()
-        val allTransactions = parser.parse(input)
+        val reportParser = ReportParser()
+        val allTransactions = reportParser.parse(input)
             .map {
                 it.copy(totalAmount = it.totalAmount * exchangeRateLoader.load(
                     it.date

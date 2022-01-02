@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import java.math.BigDecimal
 
-internal class ParserTest {
+internal class ReportParserTest {
 
     @Test
     fun `parse simple data`() {
         val input = "Date,Ticker,Type,Quantity,Price per share,Total Amount,Currency,FX Rate\n" +
                 "02/12/2019 17:35:00,,CASH TOP-UP,,,800.00,USD,0.258499522"
 
-        val actual = Parser().parse(input)
+        val actual = ReportParser().parse(input)
 
         assertThat(actual)
             .isEqualTo(listOf(Transaction(
@@ -29,7 +29,7 @@ internal class ParserTest {
     fun `parse sample`() {
         val input = File("src/test/resources/sample.csv").readText()
 
-        val actual = Parser().parse(input)
+        val actual = ReportParser().parse(input)
 
         assertThat(actual)
             .hasSize(88)

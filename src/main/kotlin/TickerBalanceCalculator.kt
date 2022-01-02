@@ -6,7 +6,7 @@ class TickerBalanceCalculator(
     private val taxRatePercent: BigDecimal = BigDecimal("0.19"),
 ) {
 
-    fun calculateTickerTax(
+    fun calculateSumOfTickerTaxes(
         allTransactions: List<Transaction>,
         dateRange: ClosedRange<LocalDate>,
     ) = allTransactions.filter {
@@ -47,7 +47,7 @@ class TickerBalanceCalculator(
         allTransactions: List<Transaction>,
         dateRange: ClosedRange<LocalDate>,
     ) =
-        calculateTickerTax(
+        calculateSumOfTickerTaxes(
             allTransactions,
             dateRange
         )
