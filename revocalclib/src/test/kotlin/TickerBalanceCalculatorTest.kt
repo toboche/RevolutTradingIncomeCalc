@@ -33,7 +33,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             startDate.rangeTo(endDate),
             splits,
-        ) as TickerBalanceCalculator.GainTax
+        ) as TickerBalanceCalculator.CalculationResult
 
         assertThat(actual.tax).isZero
     }
@@ -59,7 +59,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             startDate.rangeTo(endDate),
             splits,
-        ) as TickerBalanceCalculator.GainTax
+        ) as TickerBalanceCalculator.CalculationResult
 
         assertThat(actual.tax).isEqualTo(BigDecimal("0.19"))
     }
@@ -85,7 +85,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             startDate.rangeTo(endDate),
             splits,
-        ) as TickerBalanceCalculator.GainTax
+        ) as TickerBalanceCalculator.CalculationResult
 
         assertThat(actual.tax).isEqualTo(BigDecimal("0.10"))
     }
@@ -125,7 +125,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             startDate.rangeTo(endDate),
             splits,
-        ) as TickerBalanceCalculator.GainTax
+        ) as TickerBalanceCalculator.CalculationResult
 
         assertThat(actual.tax).isEqualTo(BigDecimal("2.50"))
     }
@@ -171,11 +171,10 @@ class TickerBalanceCalculatorTest {
             transactions,
             startDate.rangeTo(endDate),
             splits,
-        ) as TickerBalanceCalculator.GainTax
+        ) as TickerBalanceCalculator.CalculationResult
 
         assertThat(actual.tax).isEqualTo(BigDecimal("3.00"))
     }
-
 
     @Test
     fun `calculate sample for 2019`() {
@@ -185,7 +184,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             LocalDate(2019, 1, 1).rangeTo(LocalDate(2019, 12, 31)),
             splits,
-        ) as TickerBalanceCalculator.GainTax
+        ) as TickerBalanceCalculator.CalculationResult
 
         assertThat(actual.tax).isZero
     }
@@ -198,7 +197,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             LocalDate(2020, 1, 1).rangeTo(LocalDate(2020, 12, 31)),
             splits,
-        ) as TickerBalanceCalculator.GainTax
+        ) as TickerBalanceCalculator.CalculationResult
 
         assertThat(actual.tax).isCloseTo(BigDecimal("173.29"), Offset.offset(BigDecimal("0.01")))
     }
@@ -211,7 +210,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 12, 31)),
             splits,
-        ) as TickerBalanceCalculator.Loss
+        )
 
         assertThat(actual.loss).isCloseTo(BigDecimal("-1105.56"), Offset.offset(BigDecimal("0.01")))
     }
@@ -224,7 +223,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 12, 31)),
             splits,
-        ) as TickerBalanceCalculator.GainTax
+        ) as TickerBalanceCalculator.CalculationResult
 
         assertThat(actual.tax).isCloseTo(BigDecimal("30.93"), Offset.offset(BigDecimal("0.01")))
     }
@@ -236,13 +235,14 @@ class TickerBalanceCalculatorTest {
             File("src/main/resources/stockSplits.csv").readText()
         )
 
-        val actual = TickerBalanceCalculator(taxRatePercent = BigDecimal.ONE).calculateSumOfTickerTaxes(
-            allTransactions = inputTransactions,
-            LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 7, 3)),
-            splits
-        )
+        val actual =
+            TickerBalanceCalculator(taxRatePercent = BigDecimal.ONE).calculateResult(
+                allTransactions = inputTransactions,
+                LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 7, 3)),
+                splits
+            )
 
-        assertThat(actual)
+        assertThat(actual.tax)
             .isEqualTo("70.07")
     }
 
@@ -253,13 +253,14 @@ class TickerBalanceCalculatorTest {
             File("src/main/resources/stockSplits.csv").readText()
         )
 
-        val actual = TickerBalanceCalculator(taxRatePercent = BigDecimal.ONE).calculateSumOfTickerTaxes(
-            allTransactions = inputTransactions,
-            LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 7, 30)),
-            splits
-        )
+        val actual =
+            TickerBalanceCalculator(taxRatePercent = BigDecimal.ONE).calculateResult(
+                allTransactions = inputTransactions,
+                LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 7, 30)),
+                splits
+            )
 
-        assertThat(actual)
+        assertThat(actual.tax)
             .isEqualTo(BigDecimal("88.25"))
     }
 
@@ -270,14 +271,15 @@ class TickerBalanceCalculatorTest {
             File("src/main/resources/stockSplits.csv").readText()
         )
 
-        val actual = TickerBalanceCalculator(taxRatePercent = BigDecimal.ONE).calculateSumOfTickerTaxes(
-            allTransactions = inputTransactions,
-            LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 11, 30)),
-            splits
-        )
+        val actual =
+            TickerBalanceCalculator(taxRatePercent = BigDecimal.ONE).calculateResult(
+                allTransactions = inputTransactions,
+                LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 11, 30)),
+                splits
+            )
 
-        assertThat(actual)
-            .isEqualTo(BigDecimal("626.84"))
+        assertThat(actual.tax)
+            .isEqualTo(BigDecimal("626.83"))
     }
 
     private fun transaction(
@@ -287,7 +289,8 @@ class TickerBalanceCalculatorTest {
         totalAmount: BigDecimal,
         ticker: String = "TCK",
     ) =
-        Transaction(startDate,
+        Transaction(
+            startDate,
             ticker,
             transactionType,
             quantity,

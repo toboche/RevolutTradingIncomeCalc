@@ -62,13 +62,14 @@ class TickerBalanceCalculator(
             }
             state + (transaction.ticker to newTickerState)
         }
-        .mapValues { it.value.filter { dateRange.contains(it.date) && it.type == TransactionType.SELL } }
-        .map { entry ->
-            entry.value.sumOf {
-                it.gain?.setScale(2, RoundingMode.HALF_UP) ?: ZERO
-            }
-        }
-        .sumOf { it }
+
+//        .mapValues { it.value.filter { dateRange.contains(it.date) && it.type == TransactionType.SELL } }
+//        .map { entry ->
+//            entry.value.sumOf {
+//                it.gain?.setScale(2, RoundingMode.HALF_UP) ?: ZERO
+//            }
+//        }
+//        .sumOf { it }
 
     private fun historicalTickerQuantityIncludingPossibleSplits(
         historicalTicker: Transaction,
@@ -105,20 +106,48 @@ class TickerBalanceCalculator(
             dateRange,
             splits
         )
-            .let {
-                if (it < ZERO) {
-                    Loss(it.setScale(2, RoundingMode.HALF_UP))
+            .mapValues { it.value.filter { dateRange.contains(it.date) } }
+            .flatMap { it.value }
+            .fold(
+                CalculationResult(
+                    ZERO,
+                    ZERO,
+                    ZERO,
+                    ZERO
+                )
+            ) { acc, transaction ->
+                if (transaction.type == TransactionType.SELL) {
+                    acc.copy(
+                        income = acc.income + transaction.income!!,
+                        costs = acc.costs + transaction.costOfGettingIncome!!
+                    )
                 } else {
-                    GainTax((taxRatePercent * it).setScale(2, RoundingMode.HALF_UP))
+                    acc
                 }
             }
+            .let {
+                val gain = it.income - it.costs
+                val tax = if (gain < ZERO) {
+                    ZERO
+                } else {
+                    (taxRatePercent * gain).setScale(2, RoundingMode.HALF_UP)
+                }
+                val loss =
+                    if (gain < ZERO) {
+                        gain
+                    } else {
+                        ZERO
+                    }
+                it.copy(
+                    tax = tax,
+                    loss = loss
+                )
+            }
 
-    sealed class Result
-    data class GainTax(
+    data class CalculationResult(
         val tax: BigDecimal,
-    ) : Result()
-
-    data class Loss(
+        val income: BigDecimal,
         val loss: BigDecimal,
-    ) : Result()
+        val costs: BigDecimal
+    )
 }

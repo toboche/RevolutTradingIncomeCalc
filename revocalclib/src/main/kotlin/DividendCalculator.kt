@@ -1,5 +1,6 @@
 import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
 
 class DividendCalculator {
     fun calculateDividendTax(
@@ -9,13 +10,28 @@ class DividendCalculator {
         dateRange: ClosedRange<LocalDate>,
     ) = allTransactions.filter { it.type == TransactionType.DIVIDEND }
         .filter { dateRange.contains(it.date) }
-        .sumOf {
+        .fold(
+            DividendTax(
+                ZERO,
+                ZERO,
+                ZERO,
+            )
+        ) { acc, transaction ->
             //                12.55*1/(1-0.15)
             val grossDividend =
-                it.totalAmount * BigDecimal.ONE / (BigDecimal.ONE - dividendTaxRatePercentAlreadyPaidInUsa)
-            val alreadyPaidTaxInUsa = grossDividend - it.totalAmount
+                transaction.totalAmount * BigDecimal.ONE / (BigDecimal.ONE - dividendTaxRatePercentAlreadyPaidInUsa)
+            val alreadyPaidTaxInUsa = grossDividend - transaction.totalAmount
             val totalDividendTax = grossDividend * totalDividendTaxRatePercent
-            (totalDividendTax - alreadyPaidTaxInUsa)
+            acc.copy(
+                alreadyPaidTax = acc.alreadyPaidTax + alreadyPaidTaxInUsa,
+                totalTaxToPay = acc.totalTaxToPay + totalDividendTax,
+                leftTaxToPay = acc.leftTaxToPay + (totalDividendTax - alreadyPaidTaxInUsa)
+            )
         }
 
+    data class DividendTax(
+        val alreadyPaidTax: BigDecimal,
+        val totalTaxToPay: BigDecimal,
+        val leftTaxToPay: BigDecimal
+    )
 }

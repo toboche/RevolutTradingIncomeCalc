@@ -16,7 +16,13 @@ internal class DividendCalculatorTest {
             LocalDate(2020, 1, 1).rangeTo(LocalDate(2020, 12, 31))
         )
 
-        Assertions.assertThat(actual).isEqualTo(BigDecimal("4.1713"))
+        Assertions.assertThat(actual).isEqualTo(
+            DividendCalculator.DividendTax(
+                alreadyPaidTax = 15.64.toBigDecimal(),
+                totalTaxToPay = 19.8113.toBigDecimal(),
+                leftTaxToPay = 4.1713.toBigDecimal()
+            )
+        )
     }
 
     @Test
@@ -30,6 +36,12 @@ internal class DividendCalculatorTest {
             LocalDate(2021, 1, 1).rangeTo(LocalDate(2021, 12, 31))
         )
 
-        Assertions.assertThat(actual).isEqualTo(BigDecimal("5.3300"))
+        Assertions.assertThat(actual).isEqualTo(
+            DividendCalculator.DividendTax(
+                alreadyPaidTax = 19.94.toBigDecimal(),
+                totalTaxToPay = 25.27.toBigDecimal().setScale(4),
+                leftTaxToPay = 5.33.toBigDecimal().setScale(4)
+            )
+        )
     }
 }
