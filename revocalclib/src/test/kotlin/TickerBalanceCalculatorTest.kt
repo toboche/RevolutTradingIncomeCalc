@@ -260,7 +260,7 @@ class TickerBalanceCalculatorTest {
         )
 
         assertThat(actual)
-            .isEqualTo(BigDecimal("88.26"))
+            .isEqualTo(BigDecimal("88.25"))
     }
 
     @Test
@@ -277,7 +277,7 @@ class TickerBalanceCalculatorTest {
         )
 
         assertThat(actual)
-            .isEqualTo(BigDecimal("626.99"))
+            .isEqualTo(BigDecimal("626.84"))
     }
 
     private fun transaction(

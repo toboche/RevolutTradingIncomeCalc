@@ -41,7 +41,7 @@ class TickerBalanceCalculator(
                             splits,
                             historicalTicker,
                             transaction)
-                        val pricePerUnit = historicalTicker.pricePerShare!!.setScale(4) / splitsRatio
+                        val pricePerUnit = historicalTicker.pricePerShare!! / splitsRatio
                         val amountPaidForSoldTicker =
                             pricePerUnit * quantityLeftToBuy
                         totalAmountPaidForSoldTicker += amountPaidForSoldTicker
@@ -53,7 +53,7 @@ class TickerBalanceCalculator(
             }
             state + (transaction.ticker to newTickerState)
         }
-        .mapValues { it.value.filter { dateRange.contains(it.date) } }
+        .mapValues { it.value.filter { dateRange.contains(it.date) && it.type == TransactionType.SELL } }
         .map { entry ->
             entry.value.sumOf {
                 it.gain?.setScale(2, RoundingMode.HALF_UP) ?: ZERO

@@ -17,7 +17,7 @@ internal class CapitalGainCalculatorTest {
                 File("src/main/resources/stockSplits.csv").readText(),
             )
         assertThat(result.finallyToPay).isCloseTo(
-            BigDecimal("277.9945570846459176"),
+            BigDecimal("255.84946019"),
             Offset.offset(BigDecimal("0.01"))
         )
         assertThat(result.finalLoss).isEqualTo(ZERO)
@@ -27,13 +27,5 @@ internal class CapitalGainCalculatorTest {
 //        tickerGainCalculationResult = {TickerBalanceCalculator$Loss@3582} Loss(loss=-8507.14995707808376)
 //        finallyToPay = {BigDecimal@3583} "0"
 //        finalLoss = {BigDecimal@3584} "-50.92053981"
-
-
-//        result = {CapitalGainCalculator$GainAndExpenses@3287} GainAndExpenses(dividendTaxLeftToPay=20.58496419, custodyFees=71.505504, tickerGainCalculationResult=GainTax(tax=328.9150968946459176), finallyToPay=277.9945570846459176, finalLoss=0)
-//        dividendTaxLeftToPay = {BigDecimal@3547} "20.58496419"
-//        custodyFees = {BigDecimal@3548} "71.505504"
-//        tickerGainCalculationResult = {TickerBalanceCalculator$GainTax@3549} GainTax(tax=328.9150968946459176)
-//        finallyToPay = {BigDecimal@3550} "277.9945570846459176"
-//        finalLoss = {BigDecimal@3551} "0"
     }
 }

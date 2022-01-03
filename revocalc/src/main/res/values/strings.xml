@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Revo Calc</string>
+    <string name="no_report_selected">You need to select a .csv report file generated with the Revolut app</string>
+    <string name="select_report">Select report file</string>
+    <string name="compute">Calculate gain</string>
+    <string name="dividend_tax_header">Dividend tax to pay</string>
+    <string name="custody_fees_header">Custody fees</string>
+    <string name="capital_gain">Stock capital gain</string>
+    <string name="tax_to_pay">Tax to pay</string>
+    <string name="loss">Loss</string>
 </resources>

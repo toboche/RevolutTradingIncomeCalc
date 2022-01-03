@@ -20,16 +20,25 @@ class CapitalGainCalculator(
         val reportParser = ReportParser()
         val allTransactions = reportParser.parse(input)
             .map {
-                it.copy(totalAmount = it.totalAmount * exchangeRateLoader.load(
-                    it.date
-                ))
+                it.copy(
+                    totalAmount = it.totalAmount * exchangeRateLoader.load(
+                        it.date
+                    ),
+                    pricePerShare =
+                    if (it.pricePerShare != null) it.pricePerShare * exchangeRateLoader.load(
+                        it.date
+                    ) else
+                        null
+                )
             }
         val splits = SplitParser().parse(splitInput)
 
-        val dividendTax = DividendCalculator().calculateDividendTax(allTransactions,
+        val dividendTax = DividendCalculator().calculateDividendTax(
+            allTransactions,
             dividendTaxRatePercentAlreadyPaidInUsa,
             totalDividendTaxRatePercent,
-            dateRange)
+            dateRange
+        )
 
         val custodyFees = -CustodyFeesCalculator()
             .calculate(
@@ -61,23 +70,25 @@ class CapitalGainCalculator(
             -custodyFees + capitalGainTax + dividendTax
         }
 
+        val tickerGainCalculationResult = when (capitalGain) {
+            is TickerBalanceCalculator.GainTax -> capitalGain.tax
+            is TickerBalanceCalculator.Loss -> capitalGain.loss
+        }
 
         return GainAndExpenses(
             dividendTax,
             custodyFees,
-            capitalGain,
+            tickerGainCalculationResult,
             finallyToPay,
             finalLoss
         )
-
     }
 
     data class GainAndExpenses(
         val dividendTaxLeftToPay: BigDecimal,
         val custodyFees: BigDecimal,
-        val tickerGainCalculationResult: TickerBalanceCalculator.Result,
+        val tickerGainCalculationResult: BigDecimal,
         val finallyToPay: BigDecimal,
         val finalLoss: BigDecimal,
     )
-
 }
