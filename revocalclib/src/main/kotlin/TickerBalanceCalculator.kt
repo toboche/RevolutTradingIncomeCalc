@@ -27,20 +27,25 @@ class TickerBalanceCalculator(
                 tickerState.reversed().map { historicalTicker ->
                     if (quantityLeftToBuy == ZERO || historicalTicker.type != TransactionType.BUY) {
                         historicalTicker
-                    } else if (quantityLeftToBuy >= historicalTickerQuantityIncludingPossibleSplits(historicalTicker,
+                    } else if (quantityLeftToBuy >= historicalTickerQuantityIncludingPossibleSplits(
+                            historicalTicker,
                             splits,
-                            transaction)
+                            transaction
+                        )
                     ) {
-                        quantityLeftToBuy -= historicalTickerQuantityIncludingPossibleSplits(historicalTicker,
+                        quantityLeftToBuy -= historicalTickerQuantityIncludingPossibleSplits(
+                            historicalTicker,
                             splits,
-                            transaction)
+                            transaction
+                        )
                         totalAmountPaidForSoldTicker += historicalTicker.quantity!! * historicalTicker.pricePerShare!!
                         historicalTicker.copy(quantity = ZERO)
                     } else { //quantityLeftToBuy<historicalTicker.quantity
                         val splitsRatio = splitsRatio(
                             splits,
                             historicalTicker,
-                            transaction)
+                            transaction
+                        )
                         val pricePerUnit = historicalTicker.pricePerShare!! / splitsRatio
                         val amountPaidForSoldTicker =
                             pricePerUnit * quantityLeftToBuy
@@ -49,7 +54,11 @@ class TickerBalanceCalculator(
                         quantityLeftToBuy = ZERO
                         historicalTicker.copy(quantity = historicalTicker.quantity!! - justBoughtQuantity / splitsRatio)
                     }
-                }.reversed() + transaction.copy(gain = transaction.totalAmount - totalAmountPaidForSoldTicker)
+                }.reversed() + transaction.copy(
+                    gain = transaction.totalAmount - totalAmountPaidForSoldTicker,
+                    income = transaction.totalAmount,
+                    costOfGettingIncome = totalAmountPaidForSoldTicker
+                )
             }
             state + (transaction.ticker to newTickerState)
         }
@@ -74,7 +83,9 @@ class TickerBalanceCalculator(
         currentSellTransaction: Transaction,
     ) = if (splits.any { it.ticker == historicalTicker.ticker }) {
         splits.filter {
-            it.ticker == currentSellTransaction.ticker && historicalTicker.date.rangeTo(currentSellTransaction.date)
+            it.ticker == currentSellTransaction.ticker && historicalTicker.date.rangeTo(
+                currentSellTransaction.date
+            )
                 .contains(it.date)
         }
             .fold(BigDecimal.ONE) { acc, split ->
@@ -101,7 +112,6 @@ class TickerBalanceCalculator(
                     GainTax((taxRatePercent * it).setScale(2, RoundingMode.HALF_UP))
                 }
             }
-
 
     sealed class Result
     data class GainTax(

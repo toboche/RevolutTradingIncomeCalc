@@ -6,7 +6,7 @@
     <string name="compute">Oblicz zyski</string>
     <string name="dividend_tax_header">Pozostały podatek od dywidend</string>
     <string name="custody_fees_header">Koszty utrzymania konta</string>
-    <string name="capital_gain">Zyski ze sprzedaży</string>
-    <string name="tax_to_pay">Podatek od zysków</string>
-    <string name="loss">Straty</string>
+    <string name="capital_gain">Dochód</string>
+    <string name="tax_to_pay">Podatek od dochodu</string>
+    <string name="loss">Strata</string>
 </resources>

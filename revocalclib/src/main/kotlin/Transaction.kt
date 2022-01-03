@@ -10,4 +10,6 @@ data class Transaction(
     val totalAmount: BigDecimal,
     val currency: String,
     val gain: BigDecimal? = null,
+    val income: BigDecimal? = null,
+    val costOfGettingIncome: BigDecimal? = null
 )

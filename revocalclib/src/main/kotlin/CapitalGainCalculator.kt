@@ -90,5 +90,8 @@ class CapitalGainCalculator(
         val tickerGainCalculationResult: BigDecimal,
         val finallyToPay: BigDecimal,
         val finalLoss: BigDecimal,
+        //TODO dodac przychod oraz koszty uzyskania przychodow, potrzebne do pita
+//        val income: BigDecimal,
+//        val cost: BigDecimal
     )
 }
