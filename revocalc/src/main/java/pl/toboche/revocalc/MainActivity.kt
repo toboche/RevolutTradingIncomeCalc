@@ -8,7 +8,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,8 +55,13 @@ fun MainScreen() {
     val coroutineScope = rememberCoroutineScope()
     var result by remember { mutableStateOf<CapitalGainCalculator.GainAndExpenses?>(null) }
 
-    if (filePath == null) {
-        Column {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (filePath == null) {
             Text(text = stringResource(id = R.string.no_report_selected))
             Spacer(Modifier.size(16.dp))
             Button(onClick = {
@@ -61,27 +69,27 @@ fun MainScreen() {
             }) {
                 Text(text = stringResource(id = R.string.select_report))
             }
-        }
-    } else {
-        val current = LocalContext.current
-        Button(onClick = {
-            coroutineScope.launch {
-                val inputStream = current.contentResolver.openInputStream(filePath!!)!!
-                withContext(Dispatchers.IO) {
-                    val content = inputStream.bufferedReader().use(BufferedReader::readText)
-                    result = CapitalGainCalculator().calculate(
-                        content,
-                        LocalDate(2021, 1, 1),
-                        LocalDate(2021, 12, 31),
-                        ""
-                    )
+        } else {
+            val current = LocalContext.current
+            Button(onClick = {
+                coroutineScope.launch {
+                    val inputStream = current.contentResolver.openInputStream(filePath!!)!!
+                    withContext(Dispatchers.IO) {
+                        val content = inputStream.bufferedReader().use(BufferedReader::readText)
+                        result = CapitalGainCalculator().calculate(
+                            content,
+                            LocalDate(2021, 1, 1),
+                            LocalDate(2021, 12, 31),
+                            ""
+                        )
+                    }
                 }
+            }) {
+                Text(stringResource(R.string.compute))
             }
-        }) {
-            Text(stringResource(R.string.compute))
-        }
-        if (result != null) {
-            GainAndExpensesView(result!!)
+            if (result != null) {
+                GainAndExpensesView(result!!)
+            }
         }
     }
 }
@@ -106,7 +114,7 @@ fun GainAndExpensesView(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) 
             gainAndExpenses.finalLoss
         )
         ResultItem(
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.h5,
             title = stringResource(R.string.tax_to_pay),
             value = gainAndExpenses.finallyToPay
         )
@@ -120,10 +128,11 @@ private fun ResultItem(title: String, value: BigDecimal, style: TextStyle? = nul
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, style = style ?: LocalTextStyle.current)
+        Text(title)
         Text(
+            modifier = Modifier.weight(2f, fill = false),
             text = NumberFormat.getCurrencyInstance().format(value),
-            style = style ?: MaterialTheme.typography.h5
+            style = style ?: MaterialTheme.typography.h6
         )
     }
 }
