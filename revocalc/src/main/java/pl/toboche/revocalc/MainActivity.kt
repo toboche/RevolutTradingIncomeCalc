@@ -8,10 +8,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +43,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+private val spacerSize = 16.dp
+
 @Composable
 fun MainScreen() {
     var filePath by remember { mutableStateOf<Uri?>(null) }
@@ -59,12 +60,12 @@ fun MainScreen() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(spacerSize),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (filePath == null) {
             Text(text = stringResource(id = R.string.no_report_selected))
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(spacerSize))
             Button(onClick = {
                 launcher.launch("text/csv")
             }) {
@@ -97,9 +98,13 @@ fun MainScreen() {
 
 @Composable
 fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
-    Column {
+    Column(Modifier.verticalScroll(rememberScrollState())) {
+        Spacer(Modifier.size(spacerSize))
+
         GainAndExpensesHeader("PIT-38 - rozliczenia zysków z akcji")
         GainAndExpensesHeader("Sekcja „Dochody / straty”")
+        Spacer(Modifier.size(spacerSize))
+
         ResultItem(
             stringResource(R.string.capital_income),
             gainAndExpenses.income
@@ -108,8 +113,14 @@ fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
             stringResource(R.string.costs),
             gainAndExpenses.cost
         )
+
+        Spacer(Modifier.size(spacerSize))
+        Divider()
+        Spacer(Modifier.size(spacerSize))
         GainAndExpensesHeader("PIT-36/PIT-36L/PIT-38 - rozliczenia dywidend")
         GainAndExpensesHeader("Sekcja „Kwota do zapłaty / nadpłata”")
+        Spacer(Modifier.size(spacerSize))
+
         ResultItem(
             stringResource(R.string.dividend_tax_already_paid_header),
             gainAndExpenses.dividendTaxAlreadyPaid
@@ -122,7 +133,13 @@ fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
             stringResource(R.string.dividend_tax_header),
             gainAndExpenses.dividendTaxLeftToPay
         )
+
+        Spacer(Modifier.size(spacerSize))
+        Divider()
+        Spacer(Modifier.size(spacerSize))
         GainAndExpensesHeader(text = "Dodatkowe informacje")
+        Spacer(Modifier.size(spacerSize))
+
         ResultItem(
             stringResource(R.string.custody_fees_header),
             gainAndExpenses.custodyFees
@@ -146,16 +163,17 @@ private fun GainAndExpensesHeader(text: String) {
 
 @Composable
 private fun ResultItem(title: String, value: BigDecimal, style: TextStyle? = null) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(title)
-        Text(
-            modifier = Modifier.weight(2f, fill = false),
-            text = NumberFormat.getCurrencyInstance().format(value),
-            style = style ?: MaterialTheme.typography.h6
-        )
-    }
+    Text(
+        title,
+        style = style ?: MaterialTheme.typography.body2
+    )
+    Text(
+        modifier = Modifier
+            .wrapContentHeight(unbounded = true),
+        text = NumberFormat.getCurrencyInstance().format(value),
+        style = style ?: MaterialTheme.typography.body1
+    )
+    Spacer(Modifier.size(spacerSize))
 }
 
 @Preview(showBackground = true)

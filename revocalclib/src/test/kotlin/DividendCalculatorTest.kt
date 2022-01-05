@@ -20,7 +20,8 @@ internal class DividendCalculatorTest {
             DividendCalculator.DividendTax(
                 alreadyPaidTax = 15.64.toBigDecimal(),
                 totalTaxToPay = 19.8113.toBigDecimal(),
-                leftTaxToPay = 4.1713.toBigDecimal()
+                leftTaxToPay = 4.1713.toBigDecimal(),
+                netIncome = 104.27.toBigDecimal(),
             )
         )
     }
@@ -40,7 +41,8 @@ internal class DividendCalculatorTest {
             DividendCalculator.DividendTax(
                 alreadyPaidTax = 19.94.toBigDecimal(),
                 totalTaxToPay = 25.27.toBigDecimal().setScale(4),
-                leftTaxToPay = 5.33.toBigDecimal().setScale(4)
+                leftTaxToPay = 5.33.toBigDecimal().setScale(4),
+                netIncome = "133.00".toBigDecimal(),
             )
         )
     }

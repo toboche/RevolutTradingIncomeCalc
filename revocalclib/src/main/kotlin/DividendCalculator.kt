@@ -15,6 +15,7 @@ class DividendCalculator {
                 ZERO,
                 ZERO,
                 ZERO,
+                ZERO
             )
         ) { acc, transaction ->
             //                12.55*1/(1-0.15)
@@ -25,13 +26,15 @@ class DividendCalculator {
             acc.copy(
                 alreadyPaidTax = acc.alreadyPaidTax + alreadyPaidTaxInUsa,
                 totalTaxToPay = acc.totalTaxToPay + totalDividendTax,
-                leftTaxToPay = acc.leftTaxToPay + (totalDividendTax - alreadyPaidTaxInUsa)
+                leftTaxToPay = acc.leftTaxToPay + (totalDividendTax - alreadyPaidTaxInUsa),
+                netIncome = acc.netIncome + transaction.totalAmount + alreadyPaidTaxInUsa
             )
         }
 
     data class DividendTax(
         val alreadyPaidTax: BigDecimal,
         val totalTaxToPay: BigDecimal,
-        val leftTaxToPay: BigDecimal
+        val leftTaxToPay: BigDecimal,
+        val netIncome: BigDecimal,
     )
 }
