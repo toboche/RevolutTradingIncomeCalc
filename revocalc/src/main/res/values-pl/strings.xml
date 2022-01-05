@@ -4,9 +4,11 @@
     <string name="no_report_selected">Musisz wybrać plik raportu .csv wygenerowany przez aplikację Revolut</string>
     <string name="select_report">Wybierz plik raportu</string>
     <string name="compute">Oblicz zyski</string>
-    <string name="dividend_tax_header">Pozostały podatek od dywidend</string>
-    <string name="custody_fees_header">Koszty utrzymania konta</string>
-    <string name="capital_gain">Dochód</string>
-    <string name="tax_to_pay">Podatek od dochodu</string>
-    <string name="loss">Strata</string>
+    <string name="dividend_tax_header">Pole liczone automatycznie, nie musisz go wprowadzać: "Różnica pomiędzy zryczałtowanym podatkiem a podatkiem zapłaconym za granicą (po zaokrągleniu do pełnych złotych)"</string>
+    <string name="custody_fees_header">Nie wpisujemy tego zadnym polu: koszty utrzymania konta</string>
+    <string name="capital_income">Pole 21. "Przychód" w rzędzie "Inne przychody"</string>
+    <string name="tax_to_pay">Całkowity podatek do zapłacenia</string>
+    <string name="costs">Pole 23. "Koszty uzyskania przychodów" w rzędzie "Inne przychody"</string>
+    <string name="dividend_tax_already_paid_header">Pole: „Podatek zapłacony za granicą, o którym mowa w art. 30a ust. 9 ustawy”.</string>
+    <string name="dividend_total_dividend_tax_to_pay_header">Pole: „Zryczałtowany podatek obliczony od przychodów (dochodów), o których mowa w art. 30a ust. 1 pkt 1–5 ustawy, uzyskanych poza granicami Rzeczypospolitej Polskiej”.</string>
 </resources>

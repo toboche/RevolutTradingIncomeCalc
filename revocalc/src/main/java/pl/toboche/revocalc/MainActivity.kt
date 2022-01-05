@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -88,45 +89,65 @@ fun MainScreen() {
                 Text(stringResource(R.string.compute))
             }
             if (result != null) {
-                GainAndExpensesView(result!!)
+                GainAndExpenses(result!!)
             }
         }
     }
 }
 
 @Composable
-fun GainAndExpensesView(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
+fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
     Column {
+        GainAndExpensesHeader("PIT-38 - rozliczenia zysków z akcji")
+        GainAndExpensesHeader("Sekcja „Dochody / straty”")
+        ResultItem(
+            stringResource(R.string.capital_income),
+            gainAndExpenses.income
+        )
+        ResultItem(
+            stringResource(R.string.costs),
+            gainAndExpenses.cost
+        )
+        GainAndExpensesHeader("PIT-36/PIT-36L/PIT-38 - rozliczenia dywidend")
+        GainAndExpensesHeader("Sekcja „Kwota do zapłaty / nadpłata”")
+        ResultItem(
+            stringResource(R.string.dividend_tax_already_paid_header),
+            gainAndExpenses.dividendTaxAlreadyPaid
+        )
+        ResultItem(
+            stringResource(R.string.dividend_total_dividend_tax_to_pay_header),
+            gainAndExpenses.totalDividendTaxToPay
+        )
         ResultItem(
             stringResource(R.string.dividend_tax_header),
             gainAndExpenses.dividendTaxLeftToPay
         )
+        GainAndExpensesHeader(text = "Dodatkowe informacje")
         ResultItem(
             stringResource(R.string.custody_fees_header),
             gainAndExpenses.custodyFees
         )
         ResultItem(
-            stringResource(R.string.capital_gain),
-            gainAndExpenses.tickerGainCalculationResult
-        )
-        ResultItem(
-            stringResource(R.string.loss),
-            gainAndExpenses.finalLoss
-        )
-        ResultItem(
-            style = MaterialTheme.typography.h5,
-            title = stringResource(R.string.tax_to_pay),
-            value = gainAndExpenses.finallyToPay
+            stringResource(R.string.tax_to_pay),
+            gainAndExpenses.finallyToPay
         )
     }
 }
 
 @Composable
+private fun GainAndExpensesHeader(text: String) {
+    Text(
+        text = text,
+        Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.h5
+    )
+}
+
+@Composable
 private fun ResultItem(title: String, value: BigDecimal, style: TextStyle? = null) {
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(title)
         Text(
@@ -148,13 +169,17 @@ fun DefaultPreview() {
 @Preview(showBackground = true)
 @Composable
 fun GainAndExpensesViewPreview() {
-    GainAndExpensesView(
+    GainAndExpenses(
         CapitalGainCalculator.GainAndExpenses(
             dividendTaxLeftToPay = BigDecimal("123.33"),
             custodyFees = BigDecimal("0.33"),
             tickerGainCalculationResult = BigDecimal("44234.33"),
             finallyToPay = BigDecimal("11111.22"),
-            finalLoss = BigDecimal.ZERO
+            finalLoss = BigDecimal.ZERO,
+            dividendTaxAlreadyPaid = "0.1".toBigDecimal(),
+            totalDividendTaxToPay = "111.4434".toBigDecimal(),
+            income = "2312".toBigDecimal(),
+            cost = "999.9999".toBigDecimal()
         )
     )
 }

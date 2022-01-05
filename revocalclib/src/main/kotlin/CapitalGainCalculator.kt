@@ -68,7 +68,7 @@ class CapitalGainCalculator(
         return GainAndExpenses(
             dividendTaxLeftToPay = dividendTax.leftTaxToPay,
             dividendTaxAlreadyPaid = dividendTax.alreadyPaidTax,
-            totalTaxToPay = dividendTax.totalTaxToPay,
+            totalDividendTaxToPay = dividendTax.totalTaxToPay,
             custodyFees,
             tickerGainCalculationResult,
             finallyToPay,
@@ -79,10 +79,10 @@ class CapitalGainCalculator(
     }
 
     data class GainAndExpenses(
-        val dividendTaxLeftToPay: BigDecimal,
-        val dividendTaxAlreadyPaid: BigDecimal, //„Podatek zapłacony za granicą, o którym mowa w art. 30a ust. 9 ustawy”.
-        val totalTaxToPay: BigDecimal, //„Zryczałtowany podatek obliczony od przychodów (dochodów), o których mowa w art. 30a ust. 1 pkt 1–5 ustawy, uzyskanych poza granicami Rzeczypospolitej Polskiej”.
-        val custodyFees: BigDecimal,
+        val dividendTaxLeftToPay: BigDecimal, //not put anywhere- this should be automaticall calculated once the below two fields are provided. This should be rounded to full zlotys
+        val dividendTaxAlreadyPaid: BigDecimal, //w sekcje „KWOTA DO ZAPŁATY / NADPŁATA”, pole: „Podatek zapłacony za granicą, o którym mowa w art. 30a ust. 9 ustawy”.
+        val totalDividendTaxToPay: BigDecimal, //w sekcje „KWOTA DO ZAPŁATY / NADPŁATA”, pole: „Zryczałtowany podatek obliczony od przychodów (dochodów), o których mowa w art. 30a ust. 1 pkt 1–5 ustawy, uzyskanych poza granicami Rzeczypospolitej Polskiej”.
+        val custodyFees: BigDecimal, //not put anywhere - this is part of your expenses
         val tickerGainCalculationResult: BigDecimal,
         val finallyToPay: BigDecimal,
         val finalLoss: BigDecimal,

@@ -85,7 +85,7 @@ class TickerBalanceCalculatorTest {
             transactions,
             startDate.rangeTo(endDate),
             splits,
-        ) as TickerBalanceCalculator.CalculationResult
+        )
 
         assertThat(actual.tax).isEqualTo(BigDecimal("0.10"))
     }
