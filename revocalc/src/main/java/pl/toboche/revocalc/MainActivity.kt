@@ -27,6 +27,7 @@ import kotlinx.datetime.LocalDate
 import pl.toboche.revocalc.ui.theme.RevolutTradingIncomeCalcTheme
 import java.io.BufferedReader
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 
 class MainActivity : ComponentActivity() {
@@ -57,6 +58,7 @@ fun MainScreen() {
     val coroutineScope = rememberCoroutineScope()
     var result by remember { mutableStateOf<CapitalGainCalculator.GainAndExpenses?>(null) }
     var loading by remember { mutableStateOf(false) }
+    var errorLoading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -66,7 +68,7 @@ fun MainScreen() {
     ) {
         if (filePath == null) {
             Text(text = stringResource(id = R.string.no_report_selected))
-            Spacer(Modifier.size(spacerSize))
+            DefaultSpacer()
             Button(onClick = {
                 launcher.launch("text/csv")
             }) {
@@ -79,23 +81,35 @@ fun MainScreen() {
                 onClick = {
                     coroutineScope.launch {
                         loading = true
-                        val inputStream = current.contentResolver.openInputStream(filePath!!)!!
-                        withContext(Dispatchers.IO) {
-                            val content = inputStream.bufferedReader().use(BufferedReader::readText)
-                            result = CapitalGainCalculator().calculate(
-                                content,
-                                LocalDate(2021, 1, 1),
-                                LocalDate(2021, 12, 31),
-                                ""
-                            )
+                        try {
+                            val inputStream = current.contentResolver.openInputStream(filePath!!)!!
+                            withContext(Dispatchers.IO) {
+                                val content =
+                                    inputStream.bufferedReader().use(BufferedReader::readText)
+                                result = CapitalGainCalculator().calculate(
+                                    content,
+                                    LocalDate(2021, 1, 1),
+                                    LocalDate(2021, 12, 31),
+                                    ""
+                                )
+                                errorLoading = false
+                            }
+                        } catch (exception: Exception) {
+                            errorLoading = true
                         }
                         loading = false
                     }
                 }) {
                 Text(stringResource(R.string.compute))
             }
+            DefaultSpacer()
+            if (errorLoading) {
+                Text(text = "Problem z obliczaniem, spróbuj ponownie lub skontaktuj się z nami.")
+                DefaultSpacer()
+            }
             if (loading) {
                 CircularProgressIndicator()
+                DefaultSpacer()
             }
             if (result != null) {
                 GainAndExpenses(result!!)
@@ -107,11 +121,11 @@ fun MainScreen() {
 @Composable
 fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
     Column(Modifier.verticalScroll(rememberScrollState())) {
-        Spacer(Modifier.size(spacerSize))
+        DefaultSpacer()
 
         GainAndExpensesHeader("PIT-38 - rozliczenia zysków z akcji")
         GainAndExpensesHeader("Sekcja „Dochody / straty”")
-        Spacer(Modifier.size(spacerSize))
+        DefaultSpacer()
 
         ResultItem(
             stringResource(R.string.capital_income),
@@ -122,12 +136,12 @@ fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
             gainAndExpenses.tradingCost
         )
 
-        Spacer(Modifier.size(spacerSize))
+        DefaultSpacer()
         Divider()
-        Spacer(Modifier.size(spacerSize))
+        DefaultSpacer()
         GainAndExpensesHeader("PIT-36/PIT-36L/PIT-38 - rozliczenia dywidend")
         GainAndExpensesHeader("Sekcja „Kwota do zapłaty / nadpłata”")
-        Spacer(Modifier.size(spacerSize))
+        DefaultSpacer()
 
         ResultItem(
             stringResource(R.string.dividend_tax_already_paid_header),
@@ -139,14 +153,14 @@ fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
         )
         ResultItem(
             stringResource(R.string.dividend_tax_header),
-            gainAndExpenses.dividendTaxLeftToPay
+            gainAndExpenses.dividendTaxLeftToPay.setScale(0, RoundingMode.HALF_UP)
         )
 
-        Spacer(Modifier.size(spacerSize))
+        DefaultSpacer()
         Divider()
-        Spacer(Modifier.size(spacerSize))
+        DefaultSpacer()
         GainAndExpensesHeader(text = "Dodatkowe informacje")
-        Spacer(Modifier.size(spacerSize))
+        DefaultSpacer()
 
         ResultItem(
             stringResource(R.string.custody_fees_header),
@@ -185,6 +199,11 @@ private fun ResultItem(title: String, value: BigDecimal, style: TextStyle? = nul
         text = NumberFormat.getCurrencyInstance().format(value),
         style = style ?: MaterialTheme.typography.body1
     )
+    DefaultSpacer()
+}
+
+@Composable
+private fun DefaultSpacer() {
     Spacer(Modifier.size(spacerSize))
 }
 
