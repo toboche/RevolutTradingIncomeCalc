@@ -27,7 +27,7 @@ class DividendCalculator {
                 alreadyPaidTax = acc.alreadyPaidTax + alreadyPaidTaxInUsa,
                 totalTaxToPay = acc.totalTaxToPay + totalDividendTax,
                 leftTaxToPay = acc.leftTaxToPay + (totalDividendTax - alreadyPaidTaxInUsa),
-                netIncome = acc.netIncome + transaction.totalAmount + alreadyPaidTaxInUsa
+                grossIncome = acc.grossIncome + transaction.totalAmount + alreadyPaidTaxInUsa
             )
         }
 
@@ -35,6 +35,6 @@ class DividendCalculator {
         val alreadyPaidTax: BigDecimal,
         val totalTaxToPay: BigDecimal,
         val leftTaxToPay: BigDecimal,
-        val netIncome: BigDecimal,
+        val grossIncome: BigDecimal,
     )
 }

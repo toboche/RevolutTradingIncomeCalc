@@ -11,5 +11,5 @@
     <string name="costs">Pole 23. \"Koszty uzyskania przychodów\" w rzędzie \"Inne przychody\"</string>
     <string name="dividend_tax_already_paid_header">Pole: \"Podatek zapłacony za granicą, o którym mowa w art. 30a ust. 9 ustawy\"</string>
     <string name="dividend_total_dividend_tax_to_pay_header">Pole: \"Zryczałtowany podatek obliczony od przychodów (dochodów), o których mowa w art. 30a ust. 1 pkt 1–5 ustawy, uzyskanych poza granicami Rzeczypospolitej Polskiej\"</string>
-    <string name="total_gain">Całkowity zysk</string>
+    <string name="total_gain">Całkowity przychód</string>
 </resources>

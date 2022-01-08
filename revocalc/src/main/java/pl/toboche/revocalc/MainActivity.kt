@@ -56,6 +56,7 @@ fun MainScreen() {
         }
     val coroutineScope = rememberCoroutineScope()
     var result by remember { mutableStateOf<CapitalGainCalculator.GainAndExpenses?>(null) }
+    var loading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -73,21 +74,28 @@ fun MainScreen() {
             }
         } else {
             val current = LocalContext.current
-            Button(onClick = {
-                coroutineScope.launch {
-                    val inputStream = current.contentResolver.openInputStream(filePath!!)!!
-                    withContext(Dispatchers.IO) {
-                        val content = inputStream.bufferedReader().use(BufferedReader::readText)
-                        result = CapitalGainCalculator().calculate(
-                            content,
-                            LocalDate(2021, 1, 1),
-                            LocalDate(2021, 12, 31),
-                            ""
-                        )
+            Button(
+                enabled = !loading,
+                onClick = {
+                    coroutineScope.launch {
+                        loading = true
+                        val inputStream = current.contentResolver.openInputStream(filePath!!)!!
+                        withContext(Dispatchers.IO) {
+                            val content = inputStream.bufferedReader().use(BufferedReader::readText)
+                            result = CapitalGainCalculator().calculate(
+                                content,
+                                LocalDate(2021, 1, 1),
+                                LocalDate(2021, 12, 31),
+                                ""
+                            )
+                        }
+                        loading = false
                     }
-                }
-            }) {
+                }) {
                 Text(stringResource(R.string.compute))
+            }
+            if (loading) {
+                CircularProgressIndicator()
             }
             if (result != null) {
                 GainAndExpenses(result!!)
@@ -107,11 +115,11 @@ fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
 
         ResultItem(
             stringResource(R.string.capital_income),
-            gainAndExpenses.income
+            gainAndExpenses.tradingIncome
         )
         ResultItem(
             stringResource(R.string.costs),
-            gainAndExpenses.cost
+            gainAndExpenses.tradingCost
         )
 
         Spacer(Modifier.size(spacerSize))
@@ -147,6 +155,10 @@ fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
         ResultItem(
             stringResource(R.string.tax_to_pay),
             gainAndExpenses.finallyToPay
+        )
+        ResultItem(
+            stringResource(R.string.total_gain),
+            gainAndExpenses.totalGrossIncome
         )
     }
 }
@@ -196,8 +208,9 @@ fun GainAndExpensesViewPreview() {
             finalLoss = BigDecimal.ZERO,
             dividendTaxAlreadyPaid = "0.1".toBigDecimal(),
             totalDividendTaxToPay = "111.4434".toBigDecimal(),
-            income = "2312".toBigDecimal(),
-            cost = "999.9999".toBigDecimal()
+            tradingIncome = "2312".toBigDecimal(),
+            tradingCost = "999.9999".toBigDecimal(),
+            totalGrossIncome = "999.9999".toBigDecimal()
         )
     )
 }

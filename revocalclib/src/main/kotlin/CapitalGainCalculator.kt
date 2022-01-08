@@ -69,12 +69,13 @@ class CapitalGainCalculator(
             dividendTaxLeftToPay = dividendTax.leftTaxToPay,
             dividendTaxAlreadyPaid = dividendTax.alreadyPaidTax,
             totalDividendTaxToPay = dividendTax.totalTaxToPay,
-            custodyFees,
-            tickerGainCalculationResult,
-            finallyToPay,
-            finalLoss,
-            capitalGain.income,
-            capitalGain.costs + custodyFees,
+            custodyFees = custodyFees,
+            tickerGainCalculationResult = tickerGainCalculationResult,
+            finallyToPay = finallyToPay,
+            finalLoss = finalLoss,
+            tradingIncome = capitalGain.grossIncome,
+            tradingCost = capitalGain.costs + custodyFees,
+            totalGrossIncome = capitalGain.grossIncome + dividendTax.grossIncome,
         )
     }
 
@@ -88,7 +89,8 @@ class CapitalGainCalculator(
         val finalLoss: BigDecimal,
         //TODO dodac przychod oraz koszty uzyskania przychodow, potrzebne do pit-38
         //https://bezprawnik.pl/jak-rozliczyc-akcje-revolut/
-        val income: BigDecimal,
-        val cost: BigDecimal
+        val tradingIncome: BigDecimal,
+        val tradingCost: BigDecimal,
+        val totalGrossIncome: BigDecimal,
     )
 }

@@ -21,7 +21,7 @@ internal class DividendCalculatorTest {
                 alreadyPaidTax = 15.64.toBigDecimal(),
                 totalTaxToPay = 19.8113.toBigDecimal(),
                 leftTaxToPay = 4.1713.toBigDecimal(),
-                netIncome = 104.27.toBigDecimal(),
+                grossIncome = 104.27.toBigDecimal(),
             )
         )
     }
@@ -42,7 +42,7 @@ internal class DividendCalculatorTest {
                 alreadyPaidTax = 19.94.toBigDecimal(),
                 totalTaxToPay = 25.27.toBigDecimal().setScale(4),
                 leftTaxToPay = 5.33.toBigDecimal().setScale(4),
-                netIncome = "133.00".toBigDecimal(),
+                grossIncome = "133.00".toBigDecimal(),
             )
         )
     }

@@ -118,7 +118,7 @@ class TickerBalanceCalculator(
             ) { acc, transaction ->
                 if (transaction.type == TransactionType.SELL) {
                     acc.copy(
-                        income = acc.income + transaction.income!!,
+                        grossIncome = acc.grossIncome + transaction.income!!,
                         costs = acc.costs + transaction.costOfGettingIncome!!
                     )
                 } else {
@@ -126,7 +126,7 @@ class TickerBalanceCalculator(
                 }
             }
             .let {
-                val gain = it.income - it.costs
+                val gain = it.grossIncome - it.costs
                 val tax = if (gain < ZERO) {
                     ZERO
                 } else {
@@ -146,7 +146,7 @@ class TickerBalanceCalculator(
 
     data class CalculationResult(
         val tax: BigDecimal,
-        val income: BigDecimal,
+        val grossIncome: BigDecimal,
         val loss: BigDecimal,
         val costs: BigDecimal
     )

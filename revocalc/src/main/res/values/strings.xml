@@ -10,5 +10,5 @@
     <string name="costs">Stock gain costs</string>
     <string name="dividend_tax_already_paid_header">Dividend tax already paid</string>
     <string name="dividend_total_dividend_tax_to_pay_header">Total dividend tax to pay</string>
-    <string name="total_gain">Total gain</string>
+    <string name="total_gain">Total income</string>
 </resources>
