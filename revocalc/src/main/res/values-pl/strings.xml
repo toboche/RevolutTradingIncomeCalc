@@ -3,7 +3,7 @@
     <string name="app_name">Revo Kalkulator</string>
     <string name="no_report_selected">Musisz wybrać plik raportu .csv wygenerowany przez aplikację Revolut</string>
     <string name="select_report">Wybierz plik raportu</string>
-    <string name="compute">Oblicz zyski</string>
+    <string name="compute">Oblicz zyski za 2021 rok</string>
     <string name="dividend_tax_header">Pole liczone automatycznie, nie musisz go wprowadzać: \"Różnica pomiędzy zryczałtowanym podatkiem a podatkiem zapłaconym za granicą (po zaokrągleniu do pełnych złotych)\"</string>
     <string name="custody_fees_header">Nie wpisujemy tego zadnym polu: koszty utrzymania konta</string>
     <string name="capital_income">Pole 21. \"Przychód\" w rzędzie \"Inne przychody\"</string>

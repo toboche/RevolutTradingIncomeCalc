@@ -33,11 +33,12 @@ import java.text.NumberFormat
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val passedUri = intent.clipData?.getItemAt(0)?.uri ?: intent.data
         setContent {
             RevolutTradingIncomeCalcTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    MainScreen()
+                    MainScreen(passedUri)
                 }
             }
         }
@@ -47,8 +48,8 @@ class MainActivity : ComponentActivity() {
 private val spacerSize = 16.dp
 
 @Composable
-fun MainScreen() {
-    var filePath by remember { mutableStateOf<Uri?>(null) }
+fun MainScreen(passedUri: Uri?) {
+    var filePath by remember { mutableStateOf<Uri?>(passedUri) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { reportUri ->
             if (reportUri != null) {
@@ -211,7 +212,7 @@ private fun DefaultSpacer() {
 @Composable
 fun DefaultPreview() {
     RevolutTradingIncomeCalcTheme {
-        MainScreen()
+        MainScreen(null)
     }
 }
 

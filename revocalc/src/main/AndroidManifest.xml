@@ -20,6 +20,69 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.OPEN_DOCUMENT" />
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="ftp" />
+                <data android:scheme="file" />
+                <data android:scheme="data" />
+                <data android:scheme="info" />
+                <data android:scheme="data" />
+                <data android:scheme="smb" />
+                <data android:scheme="nfs" />
+                <data android:mimeType="text/comma-separated-values"/>
+                <data android:mimeType="text/csv"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.OPEN_DOCUMENT" />
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="ftp" />
+                <data android:scheme="file" />
+                <data android:scheme="data" />
+                <data android:scheme="info" />
+                <data android:scheme="data" />
+                <data android:scheme="smb" />
+                <data android:scheme="nfs" />
+                <data android:host="*" />
+                <data android:pathPattern="/.*\\.csv" />
+                <data android:pathPattern="/.*\\.CSV" />
+                <data android:pathPattern="/.*\\.txt" />
+                <data android:pathPattern="/.*\\.text" />
+            </intent-filter>
+            <intent-filter android:scheme="http">
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.OPEN_DOCUMENT" />
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.categľory.LAUNCHER" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+                <data android:mimeType="text/comma-separated-values"/>
+                <data android:mimeType="text/csv"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
         </activity>
     </application>
 
