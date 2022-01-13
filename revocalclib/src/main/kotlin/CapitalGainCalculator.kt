@@ -2,6 +2,7 @@ import api.nbp.ExchangeRateLoader
 import kotlinx.datetime.LocalDate
 import java.math.BigDecimal
 import java.math.BigDecimal.ZERO
+import java.math.RoundingMode
 
 class CapitalGainCalculator(
     private val dividendTaxRatePercentAlreadyPaidInUsa: BigDecimal = BigDecimal("0.15"),
@@ -66,7 +67,7 @@ class CapitalGainCalculator(
         val tickerGainCalculationResult = capitalGain.tax
 
         return GainAndExpenses(
-            dividendTaxLeftToPay = dividendTax.leftTaxToPay,
+            dividendTaxLeftToPay = dividendTax.leftTaxToPay.setScale(0, RoundingMode.HALF_UP),
             dividendTaxAlreadyPaid = dividendTax.alreadyPaidTax,
             totalDividendTaxToPay = dividendTax.totalTaxToPay,
             custodyFees = custodyFees,
