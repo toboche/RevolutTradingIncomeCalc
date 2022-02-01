@@ -2,6 +2,7 @@ package pl.toboche.revocalc.components
 
 import CapitalGainCalculator
 import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,13 +23,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import pl.toboche.revocalc.R
+import pl.toboche.revocalc.data.GainAndExpensesResult
 import pl.toboche.revocalc.spacerSize
 import pl.toboche.revocalc.ui.theme.RevolutTradingIncomeCalcTheme
 import java.io.BufferedReader
 
 @Composable
 fun MainScreen(passedUri: Uri?) {
-    var filePath by remember { mutableStateOf<Uri?>(passedUri) }
+    var filePath by rememberSaveable { mutableStateOf(passedUri) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { reportUri ->
             if (reportUri != null) {
@@ -35,9 +38,9 @@ fun MainScreen(passedUri: Uri?) {
             }
         }
     val coroutineScope = rememberCoroutineScope()
-    var result by remember { mutableStateOf<CapitalGainCalculator.GainAndExpenses?>(null) }
-    var loading by remember { mutableStateOf(false) }
-    var errorLoading by remember { mutableStateOf(false) }
+    var result by rememberSaveable { mutableStateOf<GainAndExpensesResult?>(null) }
+    var loading by rememberSaveable { mutableStateOf(false) }
+    var errorLoading by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -46,13 +49,7 @@ fun MainScreen(passedUri: Uri?) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (filePath == null) {
-            Text(text = stringResource(id = R.string.no_report_selected))
-            DefaultSpacer()
-            Button(onClick = {
-                launcher.launch("text/csv")
-            }) {
-                Text(text = stringResource(id = R.string.select_report))
-            }
+            NoReportSelected(launcher)
         } else {
             val current = LocalContext.current
             Button(
@@ -65,11 +62,13 @@ fun MainScreen(passedUri: Uri?) {
                             withContext(Dispatchers.IO) {
                                 val content =
                                     inputStream.bufferedReader().use(BufferedReader::readText)
-                                result = CapitalGainCalculator().calculate(
-                                    content,
-                                    LocalDate(2021, 1, 1),
-                                    LocalDate(2021, 12, 31),
-                                    ""
+                                result = GainAndExpensesResult(
+                                    CapitalGainCalculator().calculate(
+                                        content,
+                                        LocalDate(2021, 1, 1),
+                                        LocalDate(2021, 12, 31),
+                                        ""
+                                    )
                                 )
                                 errorLoading = false
                             }
@@ -94,6 +93,17 @@ fun MainScreen(passedUri: Uri?) {
                 GainAndExpenses(result!!)
             }
         }
+    }
+}
+
+@Composable
+private fun NoReportSelected(launcher: ManagedActivityResultLauncher<String, Uri?>) {
+    Text(text = stringResource(id = R.string.no_report_selected))
+    DefaultSpacer()
+    Button(onClick = {
+        launcher.launch("text/csv")
+    }) {
+        Text(text = stringResource(id = R.string.select_report))
     }
 }
 

@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("kotlin-parcelize")
 }
 val compose_version = ext.get("compose_version") as String
 
@@ -43,7 +44,12 @@ android {
         kotlinCompilerExtensionVersion = compose_version
     }
     packagingOptions {
-        exclude("/META-INF/{AL2.0,LGPL2.1}")
+        jniLibs {
+            excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
+        }
+        resources {
+            excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
+        }
     }
 }
 

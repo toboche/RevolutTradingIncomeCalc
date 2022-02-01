@@ -1,6 +1,5 @@
 package pl.toboche.revocalc.components
 
-import CapitalGainCalculator
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import pl.toboche.revocalc.R
+import pl.toboche.revocalc.data.GainAndExpensesResult
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Composable
-fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
+fun GainAndExpenses(gainAndExpenses: GainAndExpensesResult) {
     Column(Modifier.verticalScroll(rememberScrollState())) {
         DefaultSpacer()
 
@@ -76,7 +75,7 @@ fun GainAndExpenses(gainAndExpenses: CapitalGainCalculator.GainAndExpenses) {
 @Composable
 fun GainAndExpensesViewPreview() {
     GainAndExpenses(
-        CapitalGainCalculator.GainAndExpenses(
+        GainAndExpensesResult(
             dividendTaxLeftToPay = BigDecimal("123.33"),
             custodyFees = BigDecimal("0.33"),
             tickerGainCalculationResult = BigDecimal("44234.33"),
