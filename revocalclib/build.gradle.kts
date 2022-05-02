@@ -9,10 +9,12 @@ java {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
-    testImplementation("org.assertj:assertj-core:3.21.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+
+    testImplementation(kotlin("test"))
+    testImplementation("org.assertj:assertj-core:3.21.0")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
 }
 
