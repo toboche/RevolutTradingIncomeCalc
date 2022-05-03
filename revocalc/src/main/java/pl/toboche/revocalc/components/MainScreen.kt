@@ -1,7 +1,5 @@
 package pl.toboche.revocalc.components
 
-import CapitalGainCalculator
-import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -12,42 +10,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDate
 import pl.toboche.revocalc.MainScreenViewModel
 import pl.toboche.revocalc.R
-import pl.toboche.revocalc.data.GainAndExpensesResult
 import pl.toboche.revocalc.spacerSize
 import pl.toboche.revocalc.ui.theme.RevolutTradingIncomeCalcTheme
-import java.io.BufferedReader
 
 @Composable
 fun MainScreen(
-    passedUri: Uri?,
-    intent: Intent,
     viewModel: MainScreenViewModel = viewModel()
 ) {
-    var filePath by rememberSaveable { mutableStateOf(passedUri) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { reportUri ->
-            if (reportUri != null) {
-                filePath = reportUri
-            }
+            viewModel.reportUri = reportUri
         }
-    val coroutineScope = rememberCoroutineScope()
-    var result by rememberSaveable { mutableStateOf<GainAndExpensesResult?>(null) }
-    var loading by rememberSaveable { mutableStateOf(false) }
-    var errorLoading by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -58,47 +40,22 @@ fun MainScreen(
         if (viewModel.showReportPathChoosing) {
             NoReportSelected(launcher)
         } else {
-            val current = LocalContext.current
             Button(
-                enabled = !loading,
-                onClick = {
-                    coroutineScope.launch {
-                        loading = true
-                        try {
-                            val inputStream =
-                                current.contentResolver.openInputStream(filePath!!)!!
-                            withContext(Dispatchers.IO) {
-                                val content =
-                                    inputStream.bufferedReader().use(BufferedReader::readText)
-                                result = GainAndExpensesResult(
-                                    CapitalGainCalculator().calculate(
-                                        content,
-                                        LocalDate(2021, 1, 1),
-                                        LocalDate(2021, 12, 31),
-                                        ""
-                                    )
-                                )
-                                errorLoading = false
-                            }
-                        } catch (exception: Exception) {
-                            errorLoading = true
-                        }
-                        loading = false
-                    }
-                }) {
+                enabled = !viewModel.loading,
+                onClick = { viewModel.loadResults() }) {
                 Text(stringResource(R.string.compute))
             }
             DefaultSpacer()
-            if (errorLoading) {
+            if (viewModel.errorLoading) {
                 Text(text = "Problem z obliczaniem, spróbuj ponownie lub skontaktuj się z nami.")
                 DefaultSpacer()
             }
-            if (loading) {
+            if (viewModel.loading) {
                 CircularProgressIndicator()
                 DefaultSpacer()
             }
-            if (result != null) {
-                GainAndExpenses(result!!)
+            if (viewModel.result != null) {
+                GainAndExpenses(viewModel.result!!)
             }
         }
     }
@@ -119,6 +76,6 @@ private fun NoReportSelected(launcher: ManagedActivityResultLauncher<String, Uri
 @Composable
 fun DefaultPreview() {
     RevolutTradingIncomeCalcTheme {
-        MainScreen(null, Intent())
+        MainScreen()
     }
 }
