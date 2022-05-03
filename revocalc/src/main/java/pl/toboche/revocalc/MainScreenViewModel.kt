@@ -33,12 +33,12 @@ class MainScreenViewModel @Inject constructor(
     var errorLoading by mutableStateOf(false)
 
     fun loadResults() {
+        loading = true
         viewModelScope.launch {
-            loading = true
             try {
-                val inputStream =
-                    getApplication<Application>().contentResolver.openInputStream(reportUri!!)!!
                 withContext(Dispatchers.IO) {
+                    val inputStream =
+                        getApplication<Application>().contentResolver.openInputStream(reportUri!!)!!
                     val content =
                         inputStream.bufferedReader().use(BufferedReader::readText)
                     result = GainAndExpensesResult(
