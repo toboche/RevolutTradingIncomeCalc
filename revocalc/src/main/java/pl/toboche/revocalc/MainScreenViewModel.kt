@@ -27,10 +27,13 @@ class MainScreenViewModel @Inject constructor(
     val showReportPathChoosing: Boolean get() = reportUri == null
 
     var loading by mutableStateOf(false)
+        private set
 
     var result by mutableStateOf<GainAndExpensesResult?>(null)
+        private set
 
     var errorLoading by mutableStateOf(false)
+        private set
 
     fun loadResults() {
         loading = true
