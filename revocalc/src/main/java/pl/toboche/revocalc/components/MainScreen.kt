@@ -1,6 +1,7 @@
 package pl.toboche.revocalc.components
 
 import CapitalGainCalculator
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -18,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
+import pl.toboche.revocalc.MainScreenViewModel
 import pl.toboche.revocalc.R
 import pl.toboche.revocalc.data.GainAndExpensesResult
 import pl.toboche.revocalc.spacerSize
@@ -29,7 +32,11 @@ import pl.toboche.revocalc.ui.theme.RevolutTradingIncomeCalcTheme
 import java.io.BufferedReader
 
 @Composable
-fun MainScreen(passedUri: Uri?) {
+fun MainScreen(
+    passedUri: Uri?,
+    intent: Intent,
+    viewModel: MainScreenViewModel = viewModel()
+) {
     var filePath by rememberSaveable { mutableStateOf(passedUri) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { reportUri ->
@@ -48,7 +55,7 @@ fun MainScreen(passedUri: Uri?) {
             .padding(spacerSize),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (filePath == null) {
+        if (viewModel.showReportPathChoosing) {
             NoReportSelected(launcher)
         } else {
             val current = LocalContext.current
@@ -58,7 +65,8 @@ fun MainScreen(passedUri: Uri?) {
                     coroutineScope.launch {
                         loading = true
                         try {
-                            val inputStream = current.contentResolver.openInputStream(filePath!!)!!
+                            val inputStream =
+                                current.contentResolver.openInputStream(filePath!!)!!
                             withContext(Dispatchers.IO) {
                                 val content =
                                     inputStream.bufferedReader().use(BufferedReader::readText)
@@ -111,6 +119,6 @@ private fun NoReportSelected(launcher: ManagedActivityResultLauncher<String, Uri
 @Composable
 fun DefaultPreview() {
     RevolutTradingIncomeCalcTheme {
-        MainScreen(null)
+        MainScreen(null, Intent())
     }
 }
