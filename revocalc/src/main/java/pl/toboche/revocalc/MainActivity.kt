@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val passedUri = intent.clipData?.getItemAt(0)?.uri ?: intent.data
         val viewModel: MainScreenViewModel by viewModels()
-        viewModel.reportUri.value = passedUri
+        viewModel.setReportUri(passedUri)
         setContent {
             RevolutTradingIncomeCalcTheme {
                 // A surface container using the 'background' color from the theme

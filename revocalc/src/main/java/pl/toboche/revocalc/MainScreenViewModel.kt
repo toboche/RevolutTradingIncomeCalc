@@ -18,39 +18,47 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
-    application: Application
+    application: Application,
+    private val state: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-    val reportUri: MutableLiveData<Uri?> = MutableLiveData(null)
+    private val _reportUri: MutableLiveData<Uri?> = state.getLiveData("reportUri", null)
 
-    val showReportPathChoosing: LiveData<Boolean> = Transformations.map(reportUri) {
+    val showReportPathChoosing: LiveData<Boolean> = Transformations.map(_reportUri) {
         it == null
     }
 
     var loading by mutableStateOf(false)
         private set
 
-    var result by mutableStateOf<GainAndExpensesResult?>(null)
-        private set
+    var result = MutableLiveData<GainAndExpensesResult?>(null)
 
     var errorLoading by mutableStateOf(false)
         private set
+
+    fun setReportUri(uri: Uri?) {
+        if (uri == null) return
+        _reportUri.value = uri
+        state["reportUri"] = uri
+    }
 
     fun loadResults() {
         loading = true
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val inputStream =
-                        getApplication<Application>().contentResolver.openInputStream(reportUri.value!!)!!
+                    @Suppress("BlockingMethodInNonBlockingContext") val inputStream =
+                        getApplication<Application>().contentResolver.openInputStream(_reportUri.value!!)!!
                     val content =
                         inputStream.bufferedReader().use(BufferedReader::readText)
-                    result = GainAndExpensesResult(
-                        CapitalGainCalculator().calculate(
-                            content,
-                            LocalDate(2021, 1, 1),
-                            LocalDate(2021, 12, 31),
-                            ""
+                    result.postValue(
+                        GainAndExpensesResult(
+                            CapitalGainCalculator().calculate(
+                                content,
+                                LocalDate(2021, 1, 1),
+                                LocalDate(2021, 12, 31),
+                                ""
+                            )
                         )
                     )
                     errorLoading = false

@@ -28,7 +28,7 @@ fun MainScreen(
 ) {
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { reportUri ->
-            viewModel.reportUri.value = reportUri
+            viewModel.setReportUri(reportUri)
         }
 
     Column(
@@ -54,8 +54,8 @@ fun MainScreen(
                 CircularProgressIndicator()
                 DefaultSpacer()
             }
-            if (viewModel.result != null) {
-                GainAndExpenses(viewModel.result!!)
+            if (viewModel.result.observeAsState(null).value != null) {
+                GainAndExpenses(viewModel.result.value!!)
             }
         }
     }
