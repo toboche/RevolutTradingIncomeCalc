@@ -11,9 +11,9 @@ import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,7 +28,7 @@ fun MainScreen(
 ) {
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { reportUri ->
-            viewModel.reportUri = reportUri
+            viewModel.reportUri.value = reportUri
         }
 
     Column(
@@ -37,7 +37,7 @@ fun MainScreen(
             .padding(spacerSize),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (viewModel.showReportPathChoosing) {
+        if (viewModel.showReportPathChoosing.observeAsState(true).value) {
             NoReportSelected(launcher)
         } else {
             Button(

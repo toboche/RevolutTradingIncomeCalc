@@ -6,8 +6,7 @@ import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,9 +21,11 @@ class MainScreenViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
-    var reportUri: Uri? = null
+    val reportUri: MutableLiveData<Uri?> = MutableLiveData(null)
 
-    val showReportPathChoosing: Boolean get() = reportUri == null
+    val showReportPathChoosing: LiveData<Boolean> = Transformations.map(reportUri) {
+        it == null
+    }
 
     var loading by mutableStateOf(false)
         private set
@@ -41,7 +42,7 @@ class MainScreenViewModel @Inject constructor(
             try {
                 withContext(Dispatchers.IO) {
                     val inputStream =
-                        getApplication<Application>().contentResolver.openInputStream(reportUri!!)!!
+                        getApplication<Application>().contentResolver.openInputStream(reportUri.value!!)!!
                     val content =
                         inputStream.bufferedReader().use(BufferedReader::readText)
                     result = GainAndExpensesResult(
